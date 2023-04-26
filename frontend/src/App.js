@@ -8,10 +8,13 @@ import Login from "./components/auth/Login";
 import UserContext from "./context/userContext";
 import "./App.css";
 function App() {
+  // UserContext initial state
   const [userData, setUserData] = useState({
     token: undefined,
     user: undefined,
   });
+
+  // UseEffect ob prvem renderju strani - Pogleda ali je v localStorage shranjen JWT. Če ja ga validira in pridobi podatke userja vezanega na ta token
   useEffect(() => {
     const checkLoggedIn = async () => {
       let token = localStorage.getItem("auth-token");

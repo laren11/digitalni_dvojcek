@@ -1,14 +1,24 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import UserContext from "../../context/userContext";
 import ErrorNotice from "../../components/misc/ErrorNotice";
+
+// Login form
 function Login() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [error, setError] = useState();
-  const { setUserData } = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userData.user) {
+      navigate("/");
+    }
+  }, [userData]);
+
+  // On submit funkcija. Pošlje podatke iz forme na backend in pridobi JWT
   const submit = async (e) => {
     e.preventDefault();
     try {
@@ -27,6 +37,7 @@ function Login() {
       err.response.data.msg && setError(err.response.data.msg);
     }
   };
+
   return (
     <div
       className="d-flex align-items-center justify-content-center"

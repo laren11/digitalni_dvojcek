@@ -1,12 +1,20 @@
 import React, { useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import UserContext from "../../context/userContext";
-function Home() {
+function Home(props) {
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
+
+  //Navigacija, glede na vrednost v UserContext
   useEffect(() => {
-    if (!userData.user) navigate("/login");
-  }, []);
+    if (userData.user) {
+      navigate("/");
+    }
+    if (!userData.user) {
+      navigate("/login");
+    }
+  }, [userData]);
+
   return (
     <div>
       {userData.user ? (

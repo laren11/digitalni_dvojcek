@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../context/userContext";
 import { Button } from "react-bootstrap";
+
+// Komponenta v zgornjem desnem kotu aplikacije. Preverja ali obstaja user in glede na state spreminja gumbe
 function AuthOptions() {
   const { userData, setUserData } = useContext(UserContext);
   const navigate = useNavigate();

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import UserContext from "../../context/userContext";
 import ErrorNotice from "../../components/misc/ErrorNotice";
+
+// Registration form
 function Register() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -11,6 +13,8 @@ function Register() {
   const [error, setError] = useState();
   const { setUserData } = useContext(UserContext);
   const navigate = useNavigate();
+
+  // On submit funkcija. Po registraciji takoj login-a userja
   const submit = async (e) => {
     e.preventDefault();
     try {
