@@ -69,6 +69,9 @@ app.use(function (req, res, next) {
 //routes import
 app.use("/", indexRouter);
 app.use("/users", require("./routes/userRoutes.js"));
+app.use("/cryptocurrencies", require("./routes/cryptocurrencyRoutes.js"));
+app.use("/prices", require("./routes/priceRoutes.js"));
+app.use("/exchanges", require("./routes/exchangeRoutes.js"));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
