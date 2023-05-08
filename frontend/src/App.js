@@ -7,6 +7,8 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import UserContext from "./context/userContext";
 import "./App.css";
+import { socket } from "./socket";
+
 function App() {
   // UserContext initial state
   const [userData, setUserData] = useState({

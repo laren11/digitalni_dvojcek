@@ -24,7 +24,8 @@
     "mongodb": "^5.2.0",
     "mongoose": "^7.0.5",
     "morgan": "^1.10.0",
-    "parser": "^0.1.4"
+    "parser": "^0.1.4",
+    "socket.io": "^4.6.1"
   },
   "description": "",
   "devDependencies": {
