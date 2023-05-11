@@ -9,6 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import scraper.coinbaseScraper
+import scraper.krakenScraper
 
 @Composable
 @Preview
@@ -25,7 +27,20 @@ fun App() {
 }
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
+    /* Window(onCloseRequest = ::exitApplication) {
         App()
+    } */
+    val coinbaseScraper = coinbaseScraper()
+    var coinbaseData = coinbaseScraper.scrapeAll()
+    for (cryptoValue in coinbaseData.cryptoValues) {
+        println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
     }
+
+    /* println("________________________")
+
+    val krakenScraper = krakenScraper()
+    var krakenData = krakenScraper.scrapeAll()
+    for (cryptoValue in krakenData.cryptoValues) {
+        println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
+    } */
 }
