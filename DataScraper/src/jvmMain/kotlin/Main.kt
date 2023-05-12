@@ -31,6 +31,8 @@ fun main() = application {
     /* Window(onCloseRequest = ::exitApplication) {
         App()
     } */
+
+    // Printing scraped data
     println("COINBASE DATA")
     val coinbaseScraper = coinbaseScraper()
     var coinbaseData = coinbaseScraper.scrapeAll()
@@ -38,14 +40,14 @@ fun main() = application {
         println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
     }
 
-        println("________________________")
-        println("BITTHUMB DATA \n")
+    println("________________________")
+    println("BITTHUMB DATA \n")
 
-        val bitThumbScraper = bitThumbScraper()
-        var bitThumbData = bitThumbScraper.scrapeAll()
-        for (cryptoValue in bitThumbData.cryptoValues) {
-            println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
-        }
+    val bitThumbScraper = bitThumbScraper()
+    var bitThumbData = bitThumbScraper.scrapeAll()
+    for (cryptoValue in bitThumbData.cryptoValues) {
+        println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
+    }
 
     println("________________________")
     println("PEXPAY DATA \n")

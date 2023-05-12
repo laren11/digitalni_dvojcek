@@ -23,7 +23,7 @@ class bitThumbScraper {
         return dataToExtract
     }
 
-
+    //scrape the name of crypto
     fun scrapeName(): Array<String> {
         var nameArray = arrayOf<String>()
         var indexArray = arrayOf(0, 3, 6, 9, 12)
@@ -61,6 +61,7 @@ class bitThumbScraper {
 
     }
 
+    //scrape the value of crypto
     fun scrapeValue(): Array<String> {
         var valueArray = arrayOf<String>()
         var indexArray = arrayOf(0, 5, 10, 15, 20)

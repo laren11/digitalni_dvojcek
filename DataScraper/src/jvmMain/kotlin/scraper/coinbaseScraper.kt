@@ -23,7 +23,7 @@ class coinbaseScraper {
         return dataToExtract
     }
 
-
+    //scrape the name of crypto
     fun scrapeName(): Array<String> {
         var nameArray = arrayOf<String>()
         skrape(HttpFetcher) {
@@ -46,6 +46,7 @@ class coinbaseScraper {
 
     }
 
+    //scrape the value of crypto
     fun scrapeValue(): Array<String> {
         var valueArray = arrayOf<String>()
         val indexArray = arrayOf(0, 5, 10, 15, 20)
