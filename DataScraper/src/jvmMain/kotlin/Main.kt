@@ -7,10 +7,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import scraper.bitThumbScraper
 import scraper.coinbaseScraper
-import scraper.krakenScraper
+
+import scraper.pexpayScraper
 
 @Composable
 @Preview
@@ -30,17 +31,28 @@ fun main() = application {
     /* Window(onCloseRequest = ::exitApplication) {
         App()
     } */
+    println("COINBASE DATA")
     val coinbaseScraper = coinbaseScraper()
     var coinbaseData = coinbaseScraper.scrapeAll()
     for (cryptoValue in coinbaseData.cryptoValues) {
         println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
     }
 
-    /* println("________________________")
+        println("________________________")
+        println("BITTHUMB DATA \n")
 
-    val krakenScraper = krakenScraper()
-    var krakenData = krakenScraper.scrapeAll()
-    for (cryptoValue in krakenData.cryptoValues) {
+        val bitThumbScraper = bitThumbScraper()
+        var bitThumbData = bitThumbScraper.scrapeAll()
+        for (cryptoValue in bitThumbData.cryptoValues) {
+            println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
+        }
+
+    println("________________________")
+    println("PEXPAY DATA \n")
+
+    val pexpayScraper = pexpayScraper()
+    var pexpayData = pexpayScraper.scrapeAll()
+    for (cryptoValue in pexpayData.cryptoValues) {
         println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
-    } */
+    }
 }

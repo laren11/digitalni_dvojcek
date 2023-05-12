@@ -24,7 +24,10 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation("it.skrape:skrapeit:1.2.2")
+                implementation("it.skrape:skrapeit:1.2.2"){
+                    exclude("ch.qos.logback", "logback-classic")
+                }
+                implementation ("org.slf4j:slf4j-simple:1.7.30")
             }
         }
         val jvmTest by getting

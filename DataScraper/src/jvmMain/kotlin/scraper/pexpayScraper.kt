@@ -1,5 +1,4 @@
 package scraper
-
 import it.skrape.core.htmlDocument
 import it.skrape.fetcher.HttpFetcher
 import it.skrape.fetcher.response
@@ -9,9 +8,7 @@ import it.skrape.selects.eachText
 import it.skrape.selects.html5.*
 import scraper.dataClasses.*
 
-
-class coinbaseScraper {
-
+class pexpayScraper{
     fun scrapeAll(): ExtractedData {
         var dataToExtract = ExtractedData()
         var names = scrapeName()
