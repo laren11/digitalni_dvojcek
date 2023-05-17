@@ -23,19 +23,34 @@ class pexpayScraper{
     //scrape the name of crypto
     fun scrapeName(): Array<String> {
         var nameArray = arrayOf<String>()
+        var indexArray = arrayOf(0, 3, 6, 9, 12)
+        var i = 0
         skrape(HttpFetcher) {
             request {
-                url = "https://www.coinbase.com/explore"
+                url = "https://coinmarketcap.com/exchanges/pexpay/"
             }
 
             response {
                 htmlDocument {
-                    findAll {
-                        h2 {
-                            withClass = "cds-typographyResets-t1xhpuq2"
-                            findAll { eachText.drop(1).take(5).forEach() { nameArray += it } }
+                    tbody {
+                        tr {
+                            td {
+                                withAttribute = "style" to "text-align:start"
+                                a {
+                                    withClass = "cmc-link"
+                                    findAll {
+                                        eachText.forEach() {
+                                            if (i in indexArray) {
+                                                nameArray += it; i++
+                                            } else i++
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
+
+
                 }
             }
         }
@@ -46,37 +61,27 @@ class pexpayScraper{
     //scrape the value of crypto
     fun scrapeValue(): Array<String> {
         var valueArray = arrayOf<String>()
-        val indexArray = arrayOf(0, 5, 10, 15, 20)
-        var i = 0;
+        var indexArray = arrayOf(0, 5, 10, 15, 20)
+        var i = 0
         skrape(HttpFetcher) {
             request {
-                url = "https://www.coinbase.com/explore"
+                url = "https://coinmarketcap.com/exchanges/pexpay/"
             }
 
             response {
                 htmlDocument {
-                    td {
-                        withClass = "cds-tableCell-t1jg7jzg"
-                        withAttribute = "colspan" to "1"
-                        withAttribute = "align" to "right"
-                        div {
-                            div {
-                                div {
-                                    div {
-                                        div {
-                                            withClass =
-                                                "cds-flex-f1g67tkn" and "cds-flex-end-f9tvb5a" and "cds-column-ci8mx7v" and "cds-flex-start-f1urtf06"
-                                            withAttribute = "style" to "flex-grow:1;flex-shrink:1"
-                                            span {
-                                                findAll {
-                                                    eachText.take(26).forEach() {
-                                                        if (i in indexArray) {
-                                                            valueArray += it;i++
-                                                        } else {
-                                                            i++
-                                                        }
-                                                    }
-                                                }
+                    tbody {
+                        tr {
+                            td {
+                                withAttribute = "style" to "text-align:end"
+                                p {
+                                    withClass = "sc-4984dd93-0" and "cEFVjA"
+                                    findAll {
+                                        eachText.take(22).forEach() {
+                                            if (i in indexArray) {
+                                                valueArray += it; i++
+                                            } else {
+                                                i++
                                             }
                                         }
                                     }

@@ -31,7 +31,6 @@ fun main() = application {
     /* Window(onCloseRequest = ::exitApplication) {
         App()
     } */
-    /*
         // Printing scraped data
         println("COINBASE DATA")
         val coinbaseScraper = coinbaseScraper()
@@ -39,24 +38,25 @@ fun main() = application {
         for (cryptoValue in coinbaseData.cryptoValues) {
             println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
         }
-      */
-    println("________________________")
-    println("BITTHUMB DATA \n")
 
-    val bitThumbScraper = bitThumbScraper()
-    var bitThumbData = bitThumbScraper.scrapeAll()
-    for (cryptoValue in bitThumbData.cryptoValues) {
-        println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
-    }
+        println("________________________")
+        println("BITTHUMB DATA \n")
 
-    println("________________________")
-    println("PEXPAY DATA \n")
+        val bitThumbScraper = bitThumbScraper()
+        var bitThumbData = bitThumbScraper.scrapeAll()
+        for (cryptoValue in bitThumbData.cryptoValues) {
+            println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
+        }
 
-    val pexpayScraper = pexpayScraper()
-    var pexpayData = pexpayScraper.scrapeAll()
-    for (cryptoValue in pexpayData.cryptoValues) {
-        println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
-    }
+
+        println("________________________")
+        println("PEXPAY DATA \n")
+
+        val pexpayScraper = pexpayScraper()
+        var pexpayData = pexpayScraper.scrapeAll()
+        for (cryptoValue in pexpayData.cryptoValues) {
+            println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
+        }
 
 
 }
