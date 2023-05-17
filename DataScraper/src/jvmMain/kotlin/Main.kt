@@ -39,6 +39,7 @@ fun main() = application {
             println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
         }
 
+
         println("________________________")
         println("BITTHUMB DATA \n")
 
