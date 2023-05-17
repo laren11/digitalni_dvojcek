@@ -31,15 +31,15 @@ fun main() = application {
     /* Window(onCloseRequest = ::exitApplication) {
         App()
     } */
-
-    // Printing scraped data
-    println("COINBASE DATA")
-    val coinbaseScraper = coinbaseScraper()
-    var coinbaseData = coinbaseScraper.scrapeAll()
-    for (cryptoValue in coinbaseData.cryptoValues) {
-        println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
-    }
-
+    /*
+        // Printing scraped data
+        println("COINBASE DATA")
+        val coinbaseScraper = coinbaseScraper()
+        var coinbaseData = coinbaseScraper.scrapeAll()
+        for (cryptoValue in coinbaseData.cryptoValues) {
+            println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
+        }
+      */
     println("________________________")
     println("BITTHUMB DATA \n")
 
@@ -57,4 +57,6 @@ fun main() = application {
     for (cryptoValue in pexpayData.cryptoValues) {
         println("NAME ${cryptoValue.name} and PRICE ${cryptoValue.price}")
     }
+
+
 }

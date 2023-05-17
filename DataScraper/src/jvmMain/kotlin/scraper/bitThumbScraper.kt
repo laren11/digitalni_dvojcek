@@ -30,7 +30,7 @@ class bitThumbScraper {
         var i = 0
         skrape(HttpFetcher) {
             request {
-                url = "https://coinmarketcap.com/exchanges/bithumb/"
+                url = "https://coinmarketcap.com/exchanges/pexpay/"
             }
 
             response {
@@ -68,7 +68,7 @@ class bitThumbScraper {
         var i = 0
         skrape(HttpFetcher) {
             request {
-                url = "https://coinmarketcap.com/exchanges/bithumb/"
+                url = "https://coinmarketcap.com/exchanges/pexpay/"
             }
 
             response {
