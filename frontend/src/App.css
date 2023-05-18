@@ -28,6 +28,17 @@
   color: #61dafb;
 }
 
+.title {
+  color: orange;
+  margin: auto;
+  text-align: center;
+  padding: 3%;
+}
+
+.background {
+  background-color: #1e1e1e;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
