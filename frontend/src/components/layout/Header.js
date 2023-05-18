@@ -12,9 +12,43 @@ function Header() {
         justifyContent: "space-between",
       }}
     >
-      <Link to="/" style={{ textDecoration: "none", color: "orange" }}>
-        <h1 className="p-2">Profityraj</h1>
-      </Link>
+      <div style={{ display: "flex" }}>
+        <Link to="/" style={{ textDecoration: "none", color: "orange" }}>
+          <h1 className="p-2">Profityraj</h1>
+        </Link>
+        <div style={{ margin: "auto", marginLeft: "10%", display: "flex" }}>
+          <Link
+            to="/values"
+            style={{
+              textDecoration: "none",
+              color: "orange",
+            }}
+          >
+            <h5>Values</h5>
+          </Link>
+          <Link
+            to="/sockets"
+            style={{
+              textDecoration: "none",
+              color: "orange",
+              paddingLeft: "10%",
+            }}
+          >
+            <h5>Sockets</h5>
+          </Link>
+          <Link
+            to="/profile"
+            style={{
+              textDecoration: "none",
+              color: "orange",
+              paddingLeft: "10%",
+            }}
+          >
+            <h5>Profile</h5>
+          </Link>
+        </div>
+      </div>
+
       <AuthOptions />
     </header>
   );
