@@ -9,6 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import scraper.dataClasses.AllExtractedData
+import scraper.dataClasses.Crypto
 
 enum class MenuState {
     PARSER,
@@ -20,7 +22,8 @@ enum class MenuState {
 @Preview
 fun App() {
     val menuState = remember { mutableStateOf(MenuState.PARSER) }
-
+    val allExtractedData = remember { mutableStateOf(AllExtractedData(emptyList())) }
+    val generatedData = remember { mutableStateOf(AllExtractedData(emptyList())) }
     MaterialTheme {
         Column(Modifier.fillMaxSize()) {
             Column(
@@ -28,7 +31,7 @@ fun App() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Header(menuState)
-                Content(menuState)
+                Content(menuState, allExtractedData, generatedData)
             }
             Menu(menuState)
         }

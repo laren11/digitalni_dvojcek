@@ -13,8 +13,9 @@ class pexpayScraper{
         var dataToExtract = ExtractedData()
         var names = scrapeName()
         var values = scrapeValue()
+        val exchange = "Pexpay"
         for (i in names.indices) {
-            val crypto = Crypto(names.get(i), values.get(i))
+            val crypto = Crypto(names.get(i), values.get(i), exchange)
             dataToExtract.cryptoValues += crypto
         }
         return dataToExtract

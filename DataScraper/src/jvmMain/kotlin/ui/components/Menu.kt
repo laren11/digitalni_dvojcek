@@ -32,6 +32,7 @@ fun Menu(menuState: MutableState<MenuState>, modifier: Modifier = Modifier) {
                 .align(Alignment.CenterVertically)
                 .clickable { menuState.value = MenuState.PARSER }
                 .composed { modifier }
+                //Change background color according to MenuState
                 .background(if (menuState.value == MenuState.PARSER) Color.White else Color.Cyan),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -56,6 +57,7 @@ fun Menu(menuState: MutableState<MenuState>, modifier: Modifier = Modifier) {
                 .align(Alignment.CenterVertically)
                 .clickable { menuState.value = MenuState.GENERATOR }
                 .composed { modifier }
+                //Change background color according to MenuState
                 .background(if (menuState.value == MenuState.GENERATOR) Color.White else Color.Cyan),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
