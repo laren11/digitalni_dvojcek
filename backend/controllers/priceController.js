@@ -196,4 +196,105 @@ module.exports = {
 
     res.status(200).json({ message: "Prices created successfully" });
   },
+
+  getLatestCoinPrices: async function (req, res) {
+    try {
+      const { exchangeName } = req.params;
+
+      // Find the exchange by its name
+      const exchange = await ExchangeModel.findOne({ name: exchangeName });
+
+      if (!exchange) {
+        return res.status(404).json({ error: "Exchange not found" });
+      }
+
+      // Find the latest prices for each cryptocurrency on the given exchange
+      const latestPrices = await PriceModel.aggregate([
+        {
+          $match: { exchange: exchange._id },
+        },
+        {
+          $sort: { cryptocurrency: 1, date: -1 },
+        },
+        {
+          $group: {
+            _id: "$cryptocurrency",
+            cryptocurrency: { $first: "$cryptocurrency" },
+            prices: { $push: "$price" },
+            dates: { $push: "$date" },
+          },
+        },
+        {
+          $lookup: {
+            from: "cryptocurrencies",
+            localField: "cryptocurrency",
+            foreignField: "_id",
+            as: "cryptocurrency",
+          },
+        },
+        {
+          $unwind: "$cryptocurrency",
+        },
+        {
+          $project: {
+            _id: 0,
+            cryptocurrency: "$cryptocurrency.name",
+            price: { $arrayElemAt: ["$prices", 0] },
+            date: { $arrayElemAt: ["$dates", 0] },
+            prevPrice: { $arrayElemAt: ["$prices", 1] },
+          },
+        },
+        {
+          $project: {
+            cryptocurrency: 1,
+            price: 1,
+            date: 1,
+            change: {
+              $round: [{ $subtract: ["$price", "$prevPrice"] }, 2],
+            },
+            changePercentage: {
+              $cond: {
+                if: { $eq: ["$prevPrice", 0] },
+                then: null,
+                else: {
+                  $round: [
+                    {
+                      $multiply: [
+                        {
+                          $divide: [
+                            { $subtract: ["$price", "$prevPrice"] },
+                            "$prevPrice",
+                          ],
+                        },
+                        100,
+                      ],
+                    },
+                    2,
+                  ],
+                },
+              },
+            },
+            changeSign: {
+              $cond: {
+                if: { $gt: [{ $subtract: ["$price", "$prevPrice"] }, 0] },
+                then: "positive",
+                else: "negative",
+              },
+            },
+          },
+        },
+      ]);
+
+      if (latestPrices.length === 0) {
+        return res
+          .status(404)
+          .json({ error: "No prices found for the given exchange" });
+      }
+
+      res.json(latestPrices);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
+  },
 };

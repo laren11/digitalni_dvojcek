@@ -8,12 +8,14 @@ import {
   MDBTableHead,
   MDBTableBody,
 } from "mdb-react-ui-kit";
+import BasicTable from "../tables/BasicTable";
 
 function Home(props) {
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
   const [cryptoData, setCryptoData] = useState(null);
   const [exchangeData, setExchangeData] = useState(null);
+  const [selectedExchange, setSelectedExchange] = useState("Coinbase");
 
   const fetchExchangeData = () => {
     fetch("http://localhost:3001/exchanges/")
@@ -37,6 +39,10 @@ function Home(props) {
       .catch((error) => {
         console.error("Error:", error);
       });
+  };
+
+  const handleDropdownChange = (event) => {
+    setSelectedExchange(event.target.value);
   };
 
   //Navigacija, glede na vrednost v UserContext
@@ -180,8 +186,13 @@ function Home(props) {
         </MDBTable> */}
       </div>
       <div style={{ height: "200px" }}></div>
-      <div style={{ color: "white" }}>
-        Create navbar for 3 different exchanges and tables under them
+      <div>
+        <select value={selectedExchange} onChange={handleDropdownChange}>
+          <option value="Coinbase">Coinbase</option>
+          <option value="Pexpay">Pexpay</option>
+          <option value="Bithumb">Bithumb</option>
+        </select>
+        <BasicTable exchangeName={selectedExchange} />
       </div>
     </div>
   );

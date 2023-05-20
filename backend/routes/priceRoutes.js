@@ -7,6 +7,8 @@ var priceController = require("../controllers/priceController.js");
  */
 router.get("/", priceController.list);
 
+router.get("/:exchangeName", priceController.getLatestCoinPrices);
+
 /*
  * GET
  */

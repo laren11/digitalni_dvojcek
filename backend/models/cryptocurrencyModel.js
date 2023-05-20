@@ -1,11 +1,8 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-var cryptocurrencySchema = new Schema({
+const cryptocurrencySchema = new Schema({
   name: String,
 });
 
-module.exports = Cryptocurrency = mongoose.model(
-  "cryptocurrency",
-  cryptocurrencySchema
-);
+module.exports = mongoose.model("Cryptocurrency", cryptocurrencySchema);
