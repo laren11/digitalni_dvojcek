@@ -62,6 +62,8 @@ function Home(props) {
     console.log("CRYPTO DATA: ", cryptoData);
   }, [exchangeData, cryptoData]);
 
+  // Workflow test
+
   return (
     /*     <>
       <div>
