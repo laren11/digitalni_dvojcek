@@ -20,7 +20,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Build and Push Docker image
+      - name: Build and Push Backend Docker image
         run: |
-          docker build -t laren11/digitalni_dvojcek:latest .
-          docker push laren11/digitalni_dvojcek:latest
+          docker build -t laren11/digitalni_dvojcek/backend:latest -f backend/Dockerfile .
+          docker push laren11/digitalni_dvojcek/backend:latest
+
+      - name: Build and Push Frontend Docker image
+        run: |
+          docker build -t laren11/digitalni_dvojcek/frontend:latest -f frontend/Dockerfile .
+          docker push laren11/digitalni_dvojcek/frontend:latest
