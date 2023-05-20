@@ -22,10 +22,10 @@ jobs:
 
       - name: Build and Push Backend Docker image
         run: |
-          docker build -t laren11/digitalni_dvojcek:backend -f backend/Dockerfile .
+          docker build -t laren11/digitalni_dvojcek:backend -f backend/Dockerfile ./backend
           docker push laren11/digitalni_dvojcek:backend
 
       - name: Build and Push Frontend Docker image
         run: |
-          docker build -t laren11/digitalni_dvojcek:frontend -f frontend/Dockerfile .
+          docker build -t laren11/digitalni_dvojcek:frontend -f frontend/Dockerfile ./frontend
           docker push laren11/digitalni_dvojcek:frontend
