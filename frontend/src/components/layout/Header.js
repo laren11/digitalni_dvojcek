@@ -18,10 +18,20 @@ function Header() {
         </Link>
         <div style={{ margin: "auto", marginLeft: "10%", display: "flex" }}>
           <Link
+            to="/"
+            style={{
+              textDecoration: "none",
+              color: "orange",
+            }}
+          >
+            <h5>Home</h5>
+          </Link>
+          <Link
             to="/values"
             style={{
               textDecoration: "none",
               color: "orange",
+              paddingLeft: "10%",
             }}
           >
             <h5>Values</h5>

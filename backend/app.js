@@ -4,6 +4,7 @@ var path = require("path");
 var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 const http = require("http");
+const createError = require("http-errors");
 
 require("dotenv").config();
 
@@ -43,14 +44,22 @@ var indexRouter = require("./routes/index");
 
 //cors for backend-frontend communication
 var cors = require("cors");
-var allowedOrigins = ["http://localhost:3000", "http://localhost:3001"];
+
+//allow origins to access your app
+var allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:8080",
+];
 
 app.use(
   cors({
     credentials: true,
     origin: function (origin, callback) {
       // Allow requests with no origin (mobile apps, curl)
-      if (!origin) return callback(null, true);
+      if (!origin) {
+        return callback(null, true);
+      }
       if (allowedOrigins.indexOf(origin) === -1) {
         var msg =
           "The CORS policy does not allow access from the specified Origin.";
