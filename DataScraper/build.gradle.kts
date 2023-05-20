@@ -4,6 +4,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.5.31"
 }
 
 group = "com.example"
@@ -28,6 +29,8 @@ kotlin {
                     exclude("ch.qos.logback", "logback-classic")
                 }
                 implementation ("org.slf4j:slf4j-simple:1.7.30")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+                implementation("com.squareup.okhttp3:okhttp:4.9.1")
             }
         }
         val jvmTest by getting

@@ -1,24 +1,27 @@
 package ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import scraper.bitThumbScraper
 import scraper.coinbaseScraper
 import scraper.dataClasses.AllExtractedData
 import scraper.dataClasses.Crypto
-import scraper.dataClasses.ExtractedData
 import scraper.pexpayScraper
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+
 
 
 @Composable
@@ -152,6 +155,13 @@ fun ParserTab(allExtractedData: MutableState<AllExtractedData>) {
                             }
                         }
                     }
+                    Button(
+                        onClick = {
+                            sendData(allExtractedData)
+                        }
+                    ) {
+                        Text(text = "Send Data")
+                    }
                 }
             }
         }
@@ -175,4 +185,26 @@ fun scrapeData(): AllExtractedData {
     //cryptoList.addAll(bithumb.scrapeAll().cryptoValues)
 
     return AllExtractedData(cryptoList)
+}
+
+fun sendData(allExtractedDataValue:MutableState<AllExtractedData>): Boolean{
+    //send extracted data with OKHttpClient
+    val client = OkHttpClient()
+    val url = "http://localhost:3001/prices/scrapeddata"
+
+    val jsonData: String = Json.encodeToString(allExtractedDataValue.value.cryptoList)
+    val requestBody = jsonData.toRequestBody("application/json".toMediaType())
+
+    val request = Request.Builder().url(url).addHeader("Origin", "http://localhost:8080").post(requestBody).build()
+
+   client.newCall(request).execute().use { response ->
+        println("RESPONSE ${response}")
+        response.close()
+    }
+
+    //refresh app
+    val emptyData = AllExtractedData(emptyList())
+    allExtractedDataValue.value = emptyData
+
+    return true
 }

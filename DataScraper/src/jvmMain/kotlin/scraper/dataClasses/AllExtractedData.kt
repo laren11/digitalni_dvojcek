@@ -1,5 +1,7 @@
 package scraper.dataClasses
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class AllExtractedData (
-    val cryptoList: List<Crypto>
+    var cryptoList: List<Crypto>
 )
