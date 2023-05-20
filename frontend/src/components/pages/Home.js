@@ -12,6 +12,32 @@ import {
 function Home(props) {
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
+  const [cryptoData, setCryptoData] = useState(null);
+  const [exchangeData, setExchangeData] = useState(null);
+
+  const fetchExchangeData = () => {
+    fetch("http://localhost:3001/exchanges/")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA: ", data);
+        setExchangeData(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  const fetchCryptoData = () => {
+    fetch("http://localhost:3001/prices/")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA: ", data);
+        setCryptoData(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   //Navigacija, glede na vrednost v UserContext
   useEffect(() => {
@@ -19,6 +45,16 @@ function Home(props) {
       navigate("/");
     }
   }, [userData]);
+
+  useEffect(() => {
+    fetchCryptoData();
+    fetchExchangeData();
+  }, []);
+
+  useEffect(() => {
+    console.log("EXCHANGE DATA: ", exchangeData);
+    console.log("CRYPTO DATA: ", cryptoData);
+  }, [exchangeData, cryptoData]);
 
   return (
     /*     <>

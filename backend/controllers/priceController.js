@@ -1,6 +1,6 @@
 const CryptocurrencyModel = require("../models/cryptocurrencyModel.js");
 const ExchangeModel = require("../models/exchangeModel.js");
-var PriceModel = require("../models/priceModel.js");
+const PriceModel = require("../models/priceModel.js");
 
 /**
  * priceController.js
@@ -12,16 +12,17 @@ module.exports = {
    * priceController.list()
    */
   list: function (req, res) {
-    PriceModel.find(function (err, prices) {
-      if (err) {
+    console.log("HERE");
+    PriceModel.find()
+      .then((prices) => {
+        return res.json(prices);
+      })
+      .catch((err) => {
         return res.status(500).json({
           message: "Error when getting price.",
           error: err,
         });
-      }
-
-      return res.json(prices);
-    });
+      });
   },
 
   /**

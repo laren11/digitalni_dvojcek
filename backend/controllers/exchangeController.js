@@ -1,4 +1,4 @@
-var ExchangeModel = require("../models/exchangeModel.js");
+const ExchangeModel = require("../models/exchangeModel.js");
 
 /**
  * exchangeController.js
@@ -10,16 +10,16 @@ module.exports = {
    * exchangeController.list()
    */
   list: function (req, res) {
-    ExchangeModel.find(function (err, exchanges) {
-      if (err) {
+    ExchangeModel.find()
+      .then((exchanges) => {
+        return res.json(exchanges);
+      })
+      .catch((err) => {
         return res.status(500).json({
           message: "Error when getting exchange.",
           error: err,
         });
-      }
-
-      return res.json(exchanges);
-    });
+      });
   },
 
   /**
