@@ -56,6 +56,16 @@ function Header() {
           >
             <h5>Profile</h5>
           </Link>
+          <Link
+            to="/map"
+            style={{
+              textDecoration: "none",
+              color: "orange",
+              paddingLeft: "10%",
+            }}
+          >
+            <h5>Map</h5>
+          </Link>
         </div>
       </div>
 

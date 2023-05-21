@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useTable, useSortBy, useFilters } from "react-table";
-import { COLUMNS } from "../../constants/Columns";
 import "../../styles/table.css";
 
 function BasicTable(props) {
@@ -63,7 +62,7 @@ function BasicTable(props) {
           );
         };
 
-        return COLUMNS.map((column) => {
+        return props.columns.map((column) => {
           if (column.accessor === "cryptocurrency") {
             return {
               ...column,

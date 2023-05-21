@@ -10,16 +10,16 @@ module.exports = {
    * atmController.list()
    */
   list: function (req, res) {
-    AtmModel.find(function (err, atms) {
-      if (err) {
+    AtmModel.find()
+      .then((atms) => {
+        return res.json(atms);
+      })
+      .catch((err) => {
         return res.status(500).json({
           message: "Error when getting atm.",
           error: err,
         });
-      }
-
-      return res.json(atms);
-    });
+      });
   },
 
   /**
