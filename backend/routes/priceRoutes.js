@@ -12,6 +12,7 @@ router.get(
   priceController.getLatestCoinPrices
 );
 router.post("/graphdata", priceController.graphData);
+router.get("/getTopFive", priceController.getTopFive);
 
 /*
  * GET

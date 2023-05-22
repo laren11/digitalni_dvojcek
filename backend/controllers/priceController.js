@@ -28,25 +28,15 @@ module.exports = {
   /**
    * priceController.show()
    */
-  show: function (req, res) {
-    var id = req.params.id;
-
-    PriceModel.findOne({ _id: id }, function (err, price) {
-      if (err) {
-        return res.status(500).json({
-          message: "Error when getting price.",
-          error: err,
-        });
-      }
-
-      if (!price) {
-        return res.status(404).json({
-          message: "No such price",
-        });
-      }
-
-      return res.json(price);
-    });
+  show: async function (req, res) {
+    const priceId = req.params.id;
+    try {
+      const price = await PriceModel.findById(priceId);
+      res.json(price);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
   },
 
   /**
@@ -329,6 +319,100 @@ module.exports = {
           .status(404)
           .json({ error: "No prices found for the given exchange" });
       }
+
+      res.json(latestPrices);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
+  },
+
+  getTopFive: async function (req, res) {
+    try {
+      const latestPrices = await PriceModel.aggregate([
+        {
+          $sort: { date: -1 }, // Sort prices by date in descending order
+        },
+        {
+          $group: {
+            _id: "$cryptocurrency",
+            cryptocurrency: { $first: "$cryptocurrency" },
+            prices: { $push: "$price" },
+            dates: { $push: "$date" },
+            exchanges: { $push: "$exchange" },
+          },
+        },
+        {
+          $lookup: {
+            from: "cryptocurrencies",
+            localField: "cryptocurrency",
+            foreignField: "_id",
+            as: "cryptocurrency",
+          },
+        },
+        {
+          $unwind: "$cryptocurrency",
+        },
+        {
+          $project: {
+            cryptocurrency: "$cryptocurrency.name",
+            price: { $arrayElemAt: ["$prices", 0] },
+            date: { $arrayElemAt: ["$dates", 0] },
+            prevPrice: { $arrayElemAt: ["$prices", 1] },
+            exchange: { $arrayElemAt: ["$exchanges", 0] },
+          },
+        },
+        {
+          $project: {
+            cryptocurrency: 1,
+            price: 1,
+            date: 1,
+            exchange: 1,
+            change: {
+              $round: [{ $subtract: ["$price", "$prevPrice"] }, 2],
+            },
+            changePercentage: {
+              $cond: {
+                if: { $eq: ["$prevPrice", 0] },
+                then: null,
+                else: {
+                  $round: [
+                    {
+                      $multiply: [
+                        {
+                          $divide: [
+                            { $subtract: ["$price", "$prevPrice"] },
+                            "$prevPrice",
+                          ],
+                        },
+                        100,
+                      ],
+                    },
+                    2,
+                  ],
+                },
+              },
+            },
+          },
+        },
+        {
+          $sort: { changePercentage: -1 }, // Sort prices by change percentage in descending order
+        },
+        {
+          $limit: 5, // Retrieve only the top 5 prices
+        },
+        {
+          $project: {
+            _id: 0,
+            cryptocurrency: 1,
+            price: 1,
+            date: 1,
+            exchange: 1,
+            change: 1,
+            changePercentage: 1,
+          },
+        },
+      ]);
 
       res.json(latestPrices);
     } catch (error) {
