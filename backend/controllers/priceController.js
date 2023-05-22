@@ -1,7 +1,7 @@
 const CryptocurrencyModel = require("../models/cryptocurrencyModel.js");
 const ExchangeModel = require("../models/exchangeModel.js");
 const PriceModel = require("../models/priceModel.js");
-
+const UserModel = require("../models/userModel.js");
 /**
  * priceController.js
  *
@@ -426,6 +426,78 @@ module.exports = {
       ]);
 
       res.json(latestPrices);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
+  },
+
+  getUserPrices: async function (req, res) {
+    try {
+      const userId = req.params.id;
+
+      // Find the user by their ID
+      const user = await UserModel.findById(userId).populate(
+        "saved.cryptoId saved.exchangeId"
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const userPrices = [];
+
+      // Iterate through each saved pair
+      for (const pair of user.saved) {
+        const { cryptoId, exchangeId } = pair;
+
+        // Find the cryptocurrency and exchange by their IDs
+        const cryptocurrency = await CryptocurrencyModel.findById(cryptoId);
+        const exchange = await ExchangeModel.findById(exchangeId);
+
+        if (!cryptocurrency || !exchange) {
+          continue; // Skip this pair if cryptocurrency or exchange not found
+        }
+
+        // Find the latest prices for the cryptocurrency on the exchange
+        const latestPrices = await PriceModel.aggregate([
+          {
+            $match: {
+              exchange: exchange._id,
+              cryptocurrency: cryptocurrency._id,
+            },
+          },
+          { $sort: { date: -1 } },
+          { $limit: 2 },
+        ]);
+
+        if (latestPrices.length > 1) {
+          const { price: currentPrice, date: currentDate } = latestPrices[0];
+          const { price: prevPrice } = latestPrices[1];
+          const change = parseFloat((currentPrice - prevPrice).toFixed(2));
+          const changePercentage =
+            prevPrice !== 0
+              ? parseFloat(((change / prevPrice) * 100).toFixed(2))
+              : null;
+
+          userPrices.push({
+            cryptocurrency: cryptocurrency.name,
+            exchange: exchange.name,
+            price: currentPrice,
+            date: currentDate,
+            change,
+            changePercentage,
+          });
+        }
+      }
+
+      if (userPrices.length === 0) {
+        return res
+          .status(404)
+          .json({ error: "No prices found for the user's saved pairs" });
+      }
+
+      res.json(userPrices);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Server error" });

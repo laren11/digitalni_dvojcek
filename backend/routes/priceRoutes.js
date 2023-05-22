@@ -13,6 +13,7 @@ router.get(
 );
 router.post("/graphdata", priceController.graphData);
 router.get("/getTopFive", priceController.getTopFive);
+router.get("/getUserPrices/:id", priceController.getUserPrices);
 
 /*
  * GET
