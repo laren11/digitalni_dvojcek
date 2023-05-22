@@ -10,6 +10,7 @@ import {
 } from "mdb-react-ui-kit";
 import BasicTable from "../tables/BasicTable";
 import { COLUMNS, VALUECOLUMNS } from "../../constants/Columns";
+import TableNoExchange from "../tables/TableNoExchange";
 
 function Home(props) {
   const { userData } = useContext(UserContext);
@@ -80,10 +81,18 @@ function Home(props) {
     </> */
     <div className="background">
       <h1 className="title">Hot Picks</h1>
-      <div style={{ color: "white" }}></div>
-      <div style={{ height: "200px" }}></div>
+      <TableNoExchange
+        columns={VALUECOLUMNS}
+        request={"http://localhost:3001/prices/getTopFive"}
+      />
+      <div style={{ height: "50px" }}></div>
       <div>
-        <select value={selectedExchange} onChange={handleDropdownChange}>
+        <h1 className="title">All Exchanges</h1>
+        <select
+          value={selectedExchange}
+          onChange={handleDropdownChange}
+          style={{ marginLeft: "4.6vw" }}
+        >
           <option value="Coinbase">Coinbase</option>
           <option value="Pexpay">Pexpay</option>
           {/* <option value="Bithumb">Bithumb</option> */}

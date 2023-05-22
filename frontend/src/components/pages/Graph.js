@@ -89,7 +89,20 @@ function Graph(props) {
 
   return (
     <div style={{ color: "white" }}>
-      <canvas ref={chartRef}></canvas>
+      <h1 className="title" style={{ paddingBottom: "2%" }}>
+        {exchange} - {value}
+      </h1>
+      <div>
+        <canvas
+          ref={chartRef}
+          style={{
+            marginLeft: "5%",
+            marginRight: "5%",
+            marginBottom: "5%",
+            backgroundColor: "white",
+          }}
+        ></canvas>
+      </div>
     </div>
   );
 }

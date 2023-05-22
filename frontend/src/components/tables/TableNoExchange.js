@@ -4,7 +4,7 @@ import "../../styles/table.css";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../context/userContext";
 
-function BasicTable(props) {
+function TableNoExchange(props) {
   const [data, setData] = useState([]);
   const { userData } = useContext(UserContext);
   const exchange = props.exchangeName;
@@ -12,12 +12,12 @@ function BasicTable(props) {
 
   useEffect(() => {
     // Fetch data from the API endpoint
-    fetch(`http://localhost:3001/prices/getLatestPrices/${exchange}`)
+    fetch(props.request)
       .then((response) => response.json())
       .then((data) => setData(data))
       .catch((error) => console.error(error));
     console.log(data);
-  }, [exchange]);
+  }, []);
 
   const viewGraph = (row, event) => {
     // Check if the click event came from the "Add" button
@@ -29,6 +29,7 @@ function BasicTable(props) {
     }
 
     const value = row.values.cryptocurrency;
+    const exchange = row.values.exchange;
     navigate("/graph?value=" + value + "&exchange=" + exchange);
   };
 
@@ -109,7 +110,10 @@ function BasicTable(props) {
         };
 
         return props.columns.map((column) => {
-          if (column.accessor === "cryptocurrency") {
+          if (
+            column.accessor === "cryptocurrency" ||
+            column.accessor === "exchange"
+          ) {
             return {
               ...column,
               Filter: ColumnFilter, // Use ColumnFilter component for cryptocurrency column
@@ -162,14 +166,7 @@ function BasicTable(props) {
     tableInstance;
 
   return (
-    <table
-      {...getTableProps()}
-      style={{
-        width: "90vw",
-        margin: "auto",
-        marginBottom: "10vh",
-      }}
-    >
+    <table {...getTableProps()} style={{ width: "90vw", margin: "auto" }}>
       {/* Table Header */}
       <thead>
         {headerGroups.map((headerGroup) => (
@@ -232,7 +229,7 @@ function BasicTable(props) {
                             e.preventDefault();
                             addUserCrypto(
                               row.original.cryptocurrency,
-                              exchange
+                              row.values.exchange
                             );
                           }}
                           className="addCrypto"
@@ -273,4 +270,4 @@ function BasicTable(props) {
   );
 }
 
-export default BasicTable;
+export default TableNoExchange;

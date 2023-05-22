@@ -35,7 +35,7 @@ const Map = () => {
 
   return (
     <div>
-      <div style={{}}>
+      <div style={{ marginBottom: "10vh" }}>
         <h1 className="title">Where can you find crypto ATMs?</h1>
         <MapContainer
           center={[46.052228, 14.994386]}

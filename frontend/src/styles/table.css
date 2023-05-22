@@ -13,19 +13,20 @@ table td {
 }
 
 table tr {
-  background-color: #f2f2f2;
+  background-color: whitesmoke;
+  color: black;
 }
 
 table tr:hover {
-  background-color: #ddd;
+  background-color: gray;
 }
 
 table th {
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: center;
-  background-color: #4caf50;
-  color: white;
+  background-color: orange;
+  color: black;
 }
 
 .emoji {
