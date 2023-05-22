@@ -354,12 +354,23 @@ module.exports = {
           $unwind: "$cryptocurrency",
         },
         {
+          $lookup: {
+            from: "exchanges",
+            localField: "exchanges",
+            foreignField: "_id",
+            as: "exchanges",
+          },
+        },
+        {
+          $unwind: "$exchanges",
+        },
+        {
           $project: {
             cryptocurrency: "$cryptocurrency.name",
             price: { $arrayElemAt: ["$prices", 0] },
             date: { $arrayElemAt: ["$dates", 0] },
             prevPrice: { $arrayElemAt: ["$prices", 1] },
-            exchange: { $arrayElemAt: ["$exchanges", 0] },
+            exchange: "$exchanges.name",
           },
         },
         {
