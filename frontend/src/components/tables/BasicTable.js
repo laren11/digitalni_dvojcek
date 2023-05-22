@@ -12,6 +12,7 @@ function BasicTable(props) {
       .then((response) => response.json())
       .then((data) => setData(data))
       .catch((error) => console.error(error));
+    console.log(data);
   }, [exchange]);
 
   const tableInstance = useTable(
@@ -173,11 +174,22 @@ function BasicTable(props) {
               {row.cells.map((cell) => {
                 return (
                   <td {...cell.getCellProps()}>
-                    {cell.column.id === "price" ||
-                    cell.column.id === "change" ? (
+                    {cell.column.id === "price" ? (
                       <span>&euro;{cell.render("Cell")}</span>
+                    ) : cell.column.id === "change" ? (
+                      cell.row.values["change"] !== null &&
+                      cell.row.values["change"] !== undefined ? (
+                        <span>&euro;{cell.render("Cell")}</span>
+                      ) : (
+                        <span>No previous price data</span>
+                      )
                     ) : cell.column.id === "changePercentage" ? (
-                      <span>{cell.render("Cell")}%</span>
+                      cell.row.values["changePercentage"] !== null &&
+                      cell.row.values["changePercentage"] !== undefined ? (
+                        <span>{cell.render("Cell")}%</span>
+                      ) : (
+                        <span>No previous price data</span>
+                      )
                     ) : (
                       cell.render("Cell")
                     )}

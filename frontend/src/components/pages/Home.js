@@ -86,7 +86,7 @@ function Home(props) {
         <select value={selectedExchange} onChange={handleDropdownChange}>
           <option value="Coinbase">Coinbase</option>
           <option value="Pexpay">Pexpay</option>
-          <option value="Bithumb">Bithumb</option>
+          {/* <option value="Bithumb">Bithumb</option> */}
         </select>
         <BasicTable exchangeName={selectedExchange} columns={COLUMNS} />
       </div>
