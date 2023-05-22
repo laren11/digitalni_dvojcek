@@ -197,6 +197,45 @@ module.exports = {
     res.status(200).json({ message: "Prices created successfully" });
   },
 
+  graphData: async function (req, res) {
+    try {
+      const { value, exchange } = req.body;
+      const cryptocurrency = await CryptocurrencyModel.findOne({ name: value });
+
+      if (!cryptocurrency) {
+        return res.status(404).json({ message: "Cryptocurrency not found." });
+      }
+
+      console.log("I AM HEREEE1");
+      // Find the corresponding exchange
+      const exchangeObj = await ExchangeModel.findOne({ name: exchange });
+
+      if (!exchangeObj) {
+        return res.status(404).json({ message: "Exchange not found." });
+      }
+      console.log(
+        "I AM HEREEE2, cryproID: ",
+        cryptocurrency._id,
+        ", exchangeID: ",
+        exchangeObj._id
+      );
+
+      // Find prices with the provided cryptocurrency and exchange
+      const prices = await PriceModel.find({
+        cryptocurrency: cryptocurrency._id,
+        exchange: exchangeObj._id,
+      })
+        .populate("cryptocurrency")
+        .populate("exchange");
+      console.log("I AM HERE 3");
+      res.status(200).json(prices);
+    } catch (error) {
+      // Handle any errors that occur during processing
+      console.error("Error processing request:", error);
+      res.status(500).json({ error: "Failed to process the request." });
+    }
+  },
+
   getLatestCoinPrices: async function (req, res) {
     try {
       const { exchangeName } = req.params;

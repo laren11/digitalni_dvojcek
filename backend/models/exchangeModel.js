@@ -6,4 +6,4 @@ var exchangeSchema = new Schema({
   url: String,
 });
 
-module.exports = Exchange = mongoose.model("exchange", exchangeSchema);
+module.exports = Exchange = mongoose.model("Exchange", exchangeSchema);

@@ -1,19 +1,27 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useTable, useSortBy, useFilters } from "react-table";
 import "../../styles/table.css";
+import { useNavigate } from "react-router-dom";
 
 function BasicTable(props) {
   const [data, setData] = useState([]);
   const exchange = props.exchangeName;
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch data from the API endpoint
-    fetch(`http://localhost:3001/prices/${exchange}`)
+    fetch(`http://localhost:3001/prices/getLatestPrices/${exchange}`)
       .then((response) => response.json())
       .then((data) => setData(data))
       .catch((error) => console.error(error));
     console.log(data);
   }, [exchange]);
+
+  const viewGraph = (row) => {
+    console.log("ROW: ", row, exchange);
+    const value = row.values.cryptocurrency;
+    navigate("/graph?value=" + value + "&exchange=" + exchange);
+  };
 
   const tableInstance = useTable(
     {
@@ -170,7 +178,7 @@ function BasicTable(props) {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()}>
+            <tr {...row.getRowProps()} onClick={() => viewGraph(row)}>
               {row.cells.map((cell) => {
                 return (
                   <td {...cell.getCellProps()}>

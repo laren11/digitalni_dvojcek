@@ -12,6 +12,7 @@ import Socketio from "./components/socketio";
 import Values from "./components/pages/Values";
 import Profile from "./components/pages/Profile";
 import Map from "./components/pages/Map";
+import Graph from "./components/pages/Graph";
 
 function App() {
   // UserContext initial state
@@ -57,6 +58,7 @@ function App() {
           <Route path="/values" element={<Values />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/map" element={<Map />} />
+          <Route path="/graph" element={<Graph />} />
         </Routes>
       </UserContext.Provider>
     </BrowserRouter>

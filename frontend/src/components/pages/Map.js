@@ -10,7 +10,7 @@ const Map = () => {
   const pin = new L.Icon({
     iconUrl: placeholder,
     iconRetinaUrl: placeholder,
-    iconAnchor: [12.5, 41],
+    iconAnchor: [12.5, 20],
     popupAnchor: [0, -41],
     iconSize: [25, 25],
   });
