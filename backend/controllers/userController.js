@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const Crypto = require("../models/cryptocurrencyModel");
+const Exchange = require("../models/exchangeModel");
 
 /**
  * userController.js
@@ -129,67 +130,55 @@ module.exports = {
       res.status(500).json({ error: err.message });
     }
   },
-
-  // List cryptocurrencies selected by user
-  listUserCryptos: async (req, res) => {
-    const userId = req.params.userId;
-    try {
-      const user = await User.findById(userId).populate("cryptocurrencies");
-      if (!user) {
-        return res.status(404).send("User not found");
-      }
-      const cryptocurrencies = user.cryptocurrencies;
-      res.send(cryptocurrencies);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server error");
-    }
-  },
-
-  //Add cryptocurreny to user
   addUserCrypto: async (req, res) => {
-    const userId = req.params.userId;
-    const cryptoId = req.body.cryptoId;
+    const { cryptoName, exchangeName, user } = req.body;
+    const userId = user.id;
     try {
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).send("User not found");
+      const existingUser = await User.findById(userId);
+      if (!existingUser) {
+        return res.status(404).json({ error: "User not found" });
       }
-      const crypto = await Crypto.findById(cryptoId);
-      if (!crypto) {
-        return res.status(404).send("Crypto not found");
-      }
-      if (user.cryptocurrencies.includes(cryptoId)) {
-        return res.status(400).send("Crypto already added to user");
-      }
-      user.cryptocurrencies.push(cryptoId);
-      await user.save();
-      res.send(user);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server error");
-    }
-  },
 
-  //Delete cryptocurrency from user
-  deleteUserCrypto: async (req, res) => {
-    const userId = req.params.userId;
-    const cryptoId = req.params.cryptoId;
-    try {
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).send("User not found");
+      // Check if the crypto ID and exchange ID pair already exists in the user's saved array
+      const crypto = await Crypto.findOne({ name: cryptoName });
+      const exchange = await Exchange.findOne({ name: exchangeName });
+      const existingPairIndex = existingUser.saved.findIndex(
+        (pair) =>
+          pair.cryptoId.toString() === crypto._id.toString() &&
+          pair.exchangeId.toString() === exchange._id.toString()
+      );
+
+      if (existingPairIndex !== -1) {
+        // Crypto ID and exchange ID pair already exists, so remove it
+        existingUser.saved.splice(existingPairIndex, 1);
+      } else {
+        // Crypto ID and exchange ID pair does not exist, so search and save it
+
+        if (!crypto || !exchange) {
+          return res
+            .status(404)
+            .json({ error: "Crypto or exchange not found" });
+        }
+
+        // Create a new cryptoPairSchema object with the obtained IDs
+        const newCryptoPair = {
+          cryptoId: crypto._id,
+          exchangeId: exchange._id,
+        };
+
+        // Push the new cryptoPairSchema object to the user's saved array
+        existingUser.saved.push(newCryptoPair);
       }
-      if (!user.cryptocurrencies.includes(cryptoId)) {
-        return res.status(400).send("Crypto not added to user");
-      }
-      const cryptoIndex = user.cryptocurrencies.indexOf(cryptoId);
-      user.cryptocurrencies.splice(cryptoIndex, 1);
-      await user.save();
-      res.send(user);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server error");
+
+      // Save the updated user object
+      await existingUser.save();
+
+      // Return the response
+      return res.json(req.body);
+    } catch (error) {
+      // Handle the error
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   },
 };

@@ -1,10 +1,12 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useContext } from "react";
 import { useTable, useSortBy, useFilters } from "react-table";
 import "../../styles/table.css";
 import { useNavigate } from "react-router-dom";
+import UserContext from "../../context/userContext";
 
 function BasicTable(props) {
   const [data, setData] = useState([]);
+  const { userData } = useContext(UserContext);
   const exchange = props.exchangeName;
   const navigate = useNavigate();
 
@@ -17,10 +19,39 @@ function BasicTable(props) {
     console.log(data);
   }, [exchange]);
 
-  const viewGraph = (row) => {
-    console.log("ROW: ", row, exchange);
+  const viewGraph = (row, event) => {
+    // Check if the click event came from the "Add" button
+    if (
+      event.target.classList.contains("addCrypto") ||
+      event.target.closest(".addCrypto")
+    ) {
+      return;
+    }
+
     const value = row.values.cryptocurrency;
     navigate("/graph?value=" + value + "&exchange=" + exchange);
+  };
+
+  const addUserCrypto = (cryptoName, exchangeName) => {
+    // Make a POST request to the server
+    fetch("http://localhost:3001/users/addUserCrypto", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cryptoName,
+        exchangeName,
+        user: userData?.user,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle the response from the server
+        console.log("Add User Crypto Response:", data);
+        // Perform any additional actions or update the UI as needed
+      })
+      .catch((error) => console.error(error));
   };
 
   const tableInstance = useTable(
@@ -178,11 +209,34 @@ function BasicTable(props) {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()} onClick={() => viewGraph(row)}>
+            <tr
+              {...row.getRowProps()}
+              onClick={(event) => viewGraph(row, event)}
+            >
               {row.cells.map((cell) => {
                 return (
                   <td {...cell.getCellProps()}>
-                    {cell.column.id === "price" ? (
+                    {cell.column.id === "cryptocurrency" && userData?.user ? (
+                      <>
+                        <span>{cell.render("Cell")}</span>
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            addUserCrypto(
+                              row.original.cryptocurrency,
+                              exchange
+                            );
+                          }}
+                          className="addCrypto"
+                        >
+                          <i
+                            className="bi bi-plus-circle clickable"
+                            title="Add"
+                          ></i>
+                        </a>
+                      </>
+                    ) : cell.column.id === "price" ? (
                       <span>&euro;{cell.render("Cell")}</span>
                     ) : cell.column.id === "change" ? (
                       cell.row.values["change"] !== null &&
