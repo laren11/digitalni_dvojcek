@@ -35,13 +35,19 @@ function BasicTable(props) {
           const handleChangeMin = (e) => {
             const value =
               e.target.value === "" ? undefined : parseFloat(e.target.value);
-            setFilter((prev) => [value, prev ? prev[1] : undefined]);
+            setFilter((prev) => [
+              value !== 0 ? value : 0,
+              prev ? prev[1] : undefined,
+            ]);
           };
 
           const handleChangeMax = (e) => {
             const value =
               e.target.value === "" ? undefined : parseFloat(e.target.value);
-            setFilter((prev) => [prev ? prev[0] : undefined, value]);
+            setFilter((prev) => [
+              prev ? prev[0] : undefined,
+              value !== 0 ? value : 0,
+            ]);
           };
 
           return (
@@ -72,6 +78,7 @@ function BasicTable(props) {
             return {
               ...column,
               Filter: NumberRangeColumnFilter, // Use NumberRangeColumnFilter component for other columns
+              filter: "numberRange",
             };
           }
         });
@@ -164,7 +171,18 @@ function BasicTable(props) {
           return (
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                return (
+                  <td {...cell.getCellProps()}>
+                    {cell.column.id === "price" ||
+                    cell.column.id === "change" ? (
+                      <span>&euro;{cell.render("Cell")}</span>
+                    ) : cell.column.id === "changePercentage" ? (
+                      <span>{cell.render("Cell")}%</span>
+                    ) : (
+                      cell.render("Cell")
+                    )}
+                  </td>
+                );
               })}
             </tr>
           );
