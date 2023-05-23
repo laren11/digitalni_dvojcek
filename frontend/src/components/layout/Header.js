@@ -37,16 +37,6 @@ function Header() {
             <h5>Values</h5>
           </Link>
           <Link
-            to="/sockets"
-            style={{
-              textDecoration: "none",
-              color: "orange",
-              paddingLeft: "10%",
-            }}
-          >
-            <h5>Sockets</h5>
-          </Link>
-          <Link
             to="/profile"
             style={{
               textDecoration: "none",

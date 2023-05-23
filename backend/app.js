@@ -5,6 +5,7 @@ var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 const http = require("http");
 const createError = require("http-errors");
+const priceController = require("./controllers/priceController");
 
 require("dotenv").config();
 
@@ -23,13 +24,30 @@ io.listen(3002, () => {
 
 io.on("connection", (socket) => {
   console.log("a user connected");
+
+  // Send initial data to the newly connected user
+  sendTopFive(socket);
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
-  socket.on("create-something", (message) => {
-    console.log(message);
-  });
 });
+
+function sendTopFive(socket) {
+  priceController.getTopFive(null, {
+    json: (data) => {
+      // Emit the topFiveData to the socket
+      socket.emit("top-five-data", data);
+    },
+    status: () => {}, // No-op for the status function
+  });
+}
+
+// Send the getTopFive data to all connected users every 30 minutes
+setInterval(() => {
+  io.sockets.emit("top-five-data", priceController.getTopFive());
+}, 30 * 60 * 1000);
+
 //connect to mongo db
 var mongoDB = process.env.MONGO_URI;
 mongoose

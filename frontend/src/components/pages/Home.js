@@ -1,16 +1,10 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import UserContext from "../../context/userContext";
-import {
-  MDBBadge,
-  MDBBtn,
-  MDBTable,
-  MDBTableHead,
-  MDBTableBody,
-} from "mdb-react-ui-kit";
 import BasicTable from "../tables/BasicTable";
 import { COLUMNS, VALUECOLUMNS } from "../../constants/Columns";
 import TableNoExchange from "../tables/TableNoExchange";
+import { subscribeToTopFiveData } from "../../socket";
 
 function Home(props) {
   const { userData } = useContext(UserContext);
@@ -18,6 +12,22 @@ function Home(props) {
   const [cryptoData, setCryptoData] = useState(null);
   const [exchangeData, setExchangeData] = useState(null);
   const [selectedExchange, setSelectedExchange] = useState("Coinbase");
+  const [topFiveData, setTopFiveData] = useState(() => {
+    const storedData = localStorage.getItem("topFiveData");
+    return storedData ? JSON.parse(storedData) : [];
+  });
+
+  useEffect(() => {
+    subscribeToTopFiveData((data) => {
+      setTopFiveData(data);
+      localStorage.setItem("topFiveData", JSON.stringify(data));
+    });
+
+    return () => {
+      // Clean up any event listeners when component unmounts
+      // (optional, depending on your requirements)
+    };
+  }, []);
 
   const fetchExchangeData = () => {
     fetch("http://localhost:3001/exchanges/")
@@ -84,6 +94,7 @@ function Home(props) {
       <TableNoExchange
         columns={VALUECOLUMNS}
         request={"http://localhost:3001/prices/getTopFive"}
+        topFiveData={topFiveData}
       />
       <div style={{ height: "50px" }}></div>
       <div>

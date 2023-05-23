@@ -7,8 +7,6 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import UserContext from "./context/userContext";
 import "./App.css";
-import { socket } from "./socket";
-import Socketio from "./components/socketio";
 import Values from "./components/pages/Values";
 import Profile from "./components/pages/Profile";
 import Map from "./components/pages/Map";
@@ -54,7 +52,6 @@ function App() {
           <Route exact path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/sockets" element={<Socketio />} />
           <Route path="/values" element={<Values />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/map" element={<Map />} />
