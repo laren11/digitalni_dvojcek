@@ -329,7 +329,7 @@ module.exports = {
 
   getTopFive: async function (req, res) {
     try {
-      const prices = await Price.aggregate([
+      const prices = await PriceModel.aggregate([
         {
           $sort: { date: -1 }, // Sort prices by date in descending order
         },

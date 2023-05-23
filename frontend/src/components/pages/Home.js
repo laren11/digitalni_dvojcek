@@ -4,10 +4,11 @@ import UserContext from "../../context/userContext";
 import BasicTable from "../tables/BasicTable";
 import { COLUMNS, VALUECOLUMNS } from "../../constants/Columns";
 import TableNoExchange from "../tables/TableNoExchange";
-import { subscribeToTopFiveData } from "../../socket";
+//import { subscribeToTopFiveData } from "../../socket";
 
 function Home(props) {
   const { userData } = useContext(UserContext);
+  console.log(userData);
   const navigate = useNavigate();
   const [cryptoData, setCryptoData] = useState(null);
   const [exchangeData, setExchangeData] = useState(null);
