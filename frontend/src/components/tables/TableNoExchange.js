@@ -5,24 +5,24 @@ import { useNavigate } from "react-router-dom";
 import UserContext from "../../context/userContext";
 
 function TableNoExchange(props) {
-  //const [data, setData] = useState([]);
-  const [data, setData] = useState(props.topFiveData || []);
+  const [data, setData] = useState([]);
+  //const [data, setData] = useState(props.topFiveData || []);
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
 
-  /*useEffect(() => {
+  useEffect(() => {
     // Fetch data from the API endpoint
     fetch(props.request)
       .then((response) => response.json())
       .then((data) => setData(data))
       .catch((error) => console.error(error));
     console.log(data);
-  }, []); */
+  }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     // Update the data state when topFiveData prop changes
     setData(props.topFiveData || []);
-  }, [props.topFiveData]);
+  }, [props.topFiveData]); */
 
   const viewGraph = (row, event) => {
     // Check if the click event came from the "Add" button
