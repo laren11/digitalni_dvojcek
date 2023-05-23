@@ -329,109 +329,81 @@ module.exports = {
 
   getTopFive: async function (req, res) {
     try {
-      const latestPrices = await PriceModel.aggregate([
+      const prices = await Price.aggregate([
         {
           $sort: { date: -1 }, // Sort prices by date in descending order
         },
         {
           $group: {
-            _id: "$cryptocurrency",
-            cryptocurrency: { $first: "$cryptocurrency" },
+            _id: { cryptocurrency: "$cryptocurrency", exchange: "$exchange" },
             prices: { $push: "$price" },
-            dates: { $push: "$date" },
-            exchanges: { $push: "$exchange" },
+          },
+        },
+        {
+          $addFields: {
+            latestPrice: { $arrayElemAt: ["$prices", 0] },
+            previousPrice: { $arrayElemAt: ["$prices", 1] },
+          },
+        },
+        {
+          $addFields: {
+            change: {
+              $subtract: ["$latestPrice", "$previousPrice"],
+            },
+            changePercentage: {
+              $multiply: [
+                {
+                  $divide: [
+                    { $subtract: ["$latestPrice", "$previousPrice"] },
+                    "$previousPrice",
+                  ],
+                },
+                100,
+              ],
+            },
           },
         },
         {
           $lookup: {
-            from: "cryptocurrencies",
-            localField: "cryptocurrency",
+            from: "cryptocurrencies", // Name of the cryptocurrencies collection
+            localField: "_id.cryptocurrency",
             foreignField: "_id",
             as: "cryptocurrency",
           },
         },
         {
-          $unwind: "$cryptocurrency",
-        },
-        {
           $lookup: {
-            from: "exchanges",
-            localField: "exchanges",
+            from: "exchanges", // Name of the exchanges collection
+            localField: "_id.exchange",
             foreignField: "_id",
-            as: "exchanges",
-          },
-        },
-        {
-          $unwind: "$exchanges",
-        },
-        {
-          $project: {
-            cryptocurrency: "$cryptocurrency.name",
-            price: { $arrayElemAt: ["$prices", 0] },
-            date: { $arrayElemAt: ["$dates", 0] },
-            prevPrice: { $arrayElemAt: ["$prices", 1] },
-            exchange: "$exchanges.name",
+            as: "exchange",
           },
         },
         {
           $project: {
-            cryptocurrency: 1,
-            price: 1,
+            _id: 0,
+            cryptocurrency: { $arrayElemAt: ["$cryptocurrency.name", 0] },
+            exchange: { $arrayElemAt: ["$exchange.name", 0] },
+            price: "$latestPrice",
             date: 1,
-            exchange: 1,
-            change: {
-              $round: [{ $subtract: ["$price", "$prevPrice"] }, 2],
-            },
-            changePercentage: {
-              $cond: {
-                if: { $eq: ["$prevPrice", 0] },
-                then: null,
-                else: {
-                  $round: [
-                    {
-                      $multiply: [
-                        {
-                          $divide: [
-                            { $subtract: ["$price", "$prevPrice"] },
-                            "$prevPrice",
-                          ],
-                        },
-                        100,
-                      ],
-                    },
-                    2,
-                  ],
-                },
-              },
-            },
+            change: { $round: ["$change", 2] },
+            changePercentage: { $round: ["$changePercentage", 2] },
           },
         },
         {
           $sort: { changePercentage: -1 }, // Sort prices by change percentage in descending order
         },
         {
-          $limit: 5, // Retrieve only the top 5 prices
-        },
-        {
-          $project: {
-            _id: 0,
-            cryptocurrency: 1,
-            price: 1,
-            date: 1,
-            exchange: 1,
-            change: 1,
-            changePercentage: 1,
-          },
+          $limit: 5, // Limit the result to top five prices
         },
       ]);
 
-      res.json(latestPrices);
+      res.json(prices);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Server error" });
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
-
   getUserPrices: async function (req, res) {
     try {
       const userId = req.params.id;
