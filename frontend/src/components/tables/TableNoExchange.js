@@ -23,7 +23,7 @@ function TableNoExchange(props) {
   }, []);
 
   useEffect(() => {
-    if (userData) {
+    if (userData?.user) {
       getSavedCryptoPairs();
     }
   }, [userData]);
@@ -94,7 +94,7 @@ function TableNoExchange(props) {
   };
 
   function checkIfCryptoSaved(row) {
-    const isExchangeIdPresent = savedPairs.some(
+    const isExchangeIdPresent = savedPairs?.some(
       (cryptoPair) =>
         cryptoPair.cryptoId.name === row.values.cryptocurrency &&
         cryptoPair.exchangeId.name === row.values.exchange

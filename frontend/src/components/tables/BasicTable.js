@@ -23,7 +23,7 @@ function BasicTable(props) {
   }, [exchange]);
 
   useEffect(() => {
-    if (userData) {
+    if (userData?.user) {
       getSavedCryptoPairs();
     }
   }, [userData]);
