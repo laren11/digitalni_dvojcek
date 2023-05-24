@@ -181,4 +181,28 @@ module.exports = {
       return res.status(500).json({ error: "Internal Server Error" });
     }
   },
+  getSaved: async (req, res) => {
+    const { userID } = req.body;
+
+    try {
+      const user = await User.findById(userID)
+        .populate({
+          path: "saved.cryptoId",
+          select: "name",
+        })
+        .populate({
+          path: "saved.exchangeId",
+          select: "name url",
+        });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const cryptoPairs = user.saved;
+      res.status(200).json(cryptoPairs);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
+  },
 };

@@ -99,6 +99,7 @@ function Graph(props) {
             marginLeft: "5%",
             marginRight: "5%",
             marginBottom: "5%",
+            paddingBottom: "5%",
             backgroundColor: "white",
           }}
         ></canvas>

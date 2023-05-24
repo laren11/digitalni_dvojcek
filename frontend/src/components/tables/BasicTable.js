@@ -3,12 +3,15 @@ import { useTable, useSortBy, useFilters } from "react-table";
 import "../../styles/table.css";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../context/userContext";
+import StarBorderPurple500OutlinedIcon from "@mui/icons-material/StarBorderPurple500Outlined";
+import StarIcon from "@mui/icons-material/Star";
 
 function BasicTable(props) {
   const [data, setData] = useState([]);
   const { userData } = useContext(UserContext);
   const exchange = props.exchangeName;
   const navigate = useNavigate();
+  const [savedPairs, setSavedPairs] = useState([]);
 
   useEffect(() => {
     // Fetch data from the API endpoint
@@ -18,6 +21,35 @@ function BasicTable(props) {
       .catch((error) => console.error(error));
     console.log(data);
   }, [exchange]);
+
+  useEffect(() => {
+    if (userData) {
+      getSavedCryptoPairs();
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    console.log("SAVED PAIRS: ", savedPairs);
+  }, [savedPairs]);
+
+  function getSavedCryptoPairs() {
+    fetch("http://localhost:3001/users/getSaved", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userID: userData?.user?.id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle the response data
+        setSavedPairs(data);
+      })
+      .catch((error) => {
+        // Handle any errors
+        console.error(error);
+      });
+  }
 
   const viewGraph = (row, event) => {
     // Check if the click event came from the "Add" button
@@ -49,10 +81,21 @@ function BasicTable(props) {
       .then((data) => {
         // Handle the response from the server
         console.log("Add User Crypto Response:", data);
+        getSavedCryptoPairs();
         // Perform any additional actions or update the UI as needed
       })
       .catch((error) => console.error(error));
   };
+
+  function checkIfCryptoSaved(crypto, exchange) {
+    const isExchangeIdPresent = savedPairs.some(
+      (cryptoPair) =>
+        cryptoPair.cryptoId.name === crypto &&
+        cryptoPair.exchangeId.name === exchange
+    );
+
+    return isExchangeIdPresent;
+  }
 
   const tableInstance = useTable(
     {
@@ -227,9 +270,7 @@ function BasicTable(props) {
                       <>
                         <span>{cell.render("Cell")}</span>
                         <a
-                          href="#"
                           onClick={(e) => {
-                            e.preventDefault();
                             addUserCrypto(
                               row.original.cryptocurrency,
                               exchange
@@ -237,10 +278,14 @@ function BasicTable(props) {
                           }}
                           className="addCrypto"
                         >
-                          <i
-                            className="bi bi-plus-circle clickable"
-                            title="Add"
-                          ></i>
+                          {checkIfCryptoSaved(
+                            row.original.cryptocurrency,
+                            exchange
+                          ) ? (
+                            <StarIcon />
+                          ) : (
+                            <StarBorderPurple500OutlinedIcon />
+                          )}
                         </a>
                       </>
                     ) : cell.column.id === "price" ? (
