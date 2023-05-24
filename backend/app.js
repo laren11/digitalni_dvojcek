@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
   console.log("a user connected");
 
   // Send initial data to the newly connected user
-  sendTopFive(socket);
+  //sendTopFive(socket);
 
   socket.on("disconnect", () => {
     console.log("user disconnected");

@@ -248,14 +248,49 @@ function BasicTable(props) {
                     ) : cell.column.id === "change" ? (
                       cell.row.values["change"] !== null &&
                       cell.row.values["change"] !== undefined ? (
-                        <span>&euro;{cell.render("Cell")}</span>
+                        <span
+                          style={{
+                            color:
+                              parseFloat(cell.row.values["change"]) > 0
+                                ? "green"
+                                : parseFloat(cell.row.values["change"]) < 0
+                                ? "red"
+                                : "inherit",
+                          }}
+                        >
+                          &euro;{cell.render("Cell")}
+                          {parseFloat(cell.row.values["change"]) < 0 && (
+                            <i className="bi bi-arrow-down-right" />
+                          )}
+                          {parseFloat(cell.row.values["change"]) > 0 && (
+                            <i className="bi bi-arrow-up-right" />
+                          )}
+                        </span>
                       ) : (
                         <span>No previous price data</span>
                       )
                     ) : cell.column.id === "changePercentage" ? (
                       cell.row.values["changePercentage"] !== null &&
                       cell.row.values["changePercentage"] !== undefined ? (
-                        <span>{cell.render("Cell")}%</span>
+                        <span
+                          style={{
+                            color:
+                              parseFloat(cell.row.values["changePercentage"]) >
+                              0
+                                ? "green"
+                                : parseFloat(
+                                    cell.row.values["changePercentage"]
+                                  ) < 0
+                                ? "red"
+                                : "inherit",
+                          }}
+                        >
+                          {cell.render("Cell")}%
+                          {parseFloat(cell.row.values["changePercentage"]) <
+                            0 && <i className="bi bi-arrow-down-right" />}
+                          {parseFloat(cell.row.values["changePercentage"]) >
+                            0 && <i className="bi bi-arrow-up-right" />}
+                        </span>
                       ) : (
                         <span>No previous price data</span>
                       )
