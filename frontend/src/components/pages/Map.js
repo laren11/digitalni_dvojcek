@@ -35,12 +35,12 @@ const Map = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: "10vh" }}>
+      <div style={{ marginBottom: "3vh" }}>
         <h1 className="title">Where can you find crypto ATMs?</h1>
         <MapContainer
           center={[46.052228, 14.994386]}
           zoom={9}
-          style={{ height: "800px", width: "100%", display: "flex" }}
+          style={{ height: "680px", width: "100%", display: "flex" }}
           className="map"
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
