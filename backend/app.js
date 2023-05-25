@@ -5,7 +5,7 @@ var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 const http = require("http");
 const createError = require("http-errors");
-const priceController = require("./controllers/priceController");
+//const priceController = require("./controllers/priceController");
 
 require("dotenv").config();
 
@@ -33,7 +33,7 @@ io.on("connection", (socket) => {
   });
 });
 
-function sendTopFive(socket) {
+/* function sendTopFive(socket) {
   priceController.getTopFive(null, {
     json: (data) => {
       // Emit the topFiveData to the socket
@@ -46,7 +46,7 @@ function sendTopFive(socket) {
 // Send the getTopFive data to all connected users every 30 minutes
 setInterval(() => {
   io.sockets.emit("top-five-data", priceController.getTopFive());
-}, 30 * 60 * 1000);
+}, 30 * 60 * 1000); */
 
 //connect to mongo db
 var mongoDB = process.env.MONGO_URI;

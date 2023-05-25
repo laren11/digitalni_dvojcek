@@ -318,7 +318,7 @@ function TableNoExchange(props) {
                         <span
                           style={{
                             color:
-                              parseFloat(cell.row.values["changePercetnage"]) >
+                              parseFloat(cell.row.values["changePercentage"]) >
                               0
                                 ? "green"
                                 : parseFloat(
