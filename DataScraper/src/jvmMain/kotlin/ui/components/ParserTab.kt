@@ -21,7 +21,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-
+import scraper.bitThumbScraper
 
 
 @Composable
@@ -40,128 +40,137 @@ fun ParserTab(allExtractedData: MutableState<AllExtractedData>) {
                 Text(text = "Get Data")
             }
         } else {
-            Box(
-                modifier = Modifier.align(Alignment.TopCenter)
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .verticalScroll(rememberScrollState())
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.verticalScroll(rememberScrollState())
+                Box(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    // Iterate over data and display in new row for each cryptocurrency
-                    allExtractedData.value.cryptoList.forEach { crypto ->
-                        // States for remembering values and if user is editing
-                        val isEditing = remember { mutableStateOf(false) }
-                        val exchangeText = remember { mutableStateOf(crypto.exchange) }
-                        val nameText = remember { mutableStateOf(crypto.name) }
-                        val priceText = remember { mutableStateOf(crypto.price) }
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.verticalScroll(rememberScrollState())
+                    ) {
+                        // Iterate over data and display in new row for each cryptocurrency
+                        allExtractedData.value.cryptoList.forEach { crypto ->
+                            // States for remembering values and if user is editing
+                            val isEditing = remember { mutableStateOf(false) }
+                            val exchangeText = remember { mutableStateOf(crypto.exchange) }
+                            val nameText = remember { mutableStateOf(crypto.name) }
+                            val priceText = remember { mutableStateOf(crypto.price) }
 
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                                .height(70.dp),
-                            elevation = 4.dp
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                                    .height(70.dp),
+                                elevation = 4.dp
                             ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    if (isEditing.value) {
-                                        Text(text = "Exchange:")
-                                        TextField(
-                                            value = exchangeText.value,
-                                            onValueChange = { exchangeText.value = it },
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    } else {
-                                        Text(text = crypto.exchange)
-                                    }
-                                }
-                                Column(modifier = Modifier.weight(1f)) {
-                                    if (isEditing.value) {
-                                        Text(text = "Name:")
-                                        TextField(
-                                            value = nameText.value,
-                                            onValueChange = { nameText.value = it },
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    } else {
-                                        Text(text = crypto.name)
-                                    }
-                                }
-                                Column(modifier = Modifier.weight(1f)) {
-                                    if (isEditing.value) {
-                                        Text(text = "Price:")
-                                        TextField(
-                                            value = priceText.value,
-                                            onValueChange = { priceText.value = it },
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    } else {
-                                        Text(text =crypto.price)
-                                    }
-                                }
                                 Row(
-                                    modifier = Modifier.weight(1f),
-                                    horizontalArrangement = Arrangement.End
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    if (isEditing.value) {
-                                        IconButton(onClick = {
-                                            // Discard changes and exit edit mode
-                                            isEditing.value = false
-                                            exchangeText.value = crypto.exchange
-                                            nameText.value = crypto.name
-                                            priceText.value = crypto.price
-                                        }) {
-                                            Icon(Icons.Default.Clear, contentDescription = "Discard")
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        if (isEditing.value) {
+                                            Text(text = "Exchange:")
+                                            TextField(
+                                                value = exchangeText.value,
+                                                onValueChange = { exchangeText.value = it },
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                        } else {
+                                            Text(text = crypto.exchange)
                                         }
-                                        IconButton(onClick = {
-                                            // Save changes and exit edit mode
-                                            allExtractedData.value = allExtractedData.value.copy(
-                                                cryptoList = allExtractedData.value.cryptoList.map {
-                                                    if (it == crypto) {
-                                                        Crypto(
-                                                            exchange = exchangeText.value,
-                                                            name = nameText.value,
-                                                            price = priceText.value
-                                                        )
-                                                    } else {
-                                                        it
+                                    }
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        if (isEditing.value) {
+                                            Text(text = "Name:")
+                                            TextField(
+                                                value = nameText.value,
+                                                onValueChange = { nameText.value = it },
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                        } else {
+                                            Text(text = crypto.name)
+                                        }
+                                    }
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        if (isEditing.value) {
+                                            Text(text = "Price:")
+                                            TextField(
+                                                value = priceText.value,
+                                                onValueChange = { priceText.value = it },
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                        } else {
+                                            Text(text =crypto.price)
+                                        }
+                                    }
+                                    Row(
+                                        modifier = Modifier.weight(1f),
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        if (isEditing.value) {
+                                            IconButton(onClick = {
+                                                // Discard changes and exit edit mode
+                                                isEditing.value = false
+                                                exchangeText.value = crypto.exchange
+                                                nameText.value = crypto.name
+                                                priceText.value = crypto.price
+                                            }) {
+                                                Icon(Icons.Default.Clear, contentDescription = "Discard")
+                                            }
+                                            IconButton(onClick = {
+                                                // Save changes and exit edit mode
+                                                allExtractedData.value = allExtractedData.value.copy(
+                                                    cryptoList = allExtractedData.value.cryptoList.map {
+                                                        if (it == crypto) {
+                                                            Crypto(
+                                                                exchange = exchangeText.value,
+                                                                name = nameText.value,
+                                                                price = priceText.value
+                                                            )
+                                                        } else {
+                                                            it
+                                                        }
                                                     }
-                                                }
-                                            )
-                                            isEditing.value = false
-                                        }) {
-                                            Icon(Icons.Default.Check, contentDescription = "Save")
-                                        }
-                                    } else {
-                                        IconButton(onClick = {
-                                            // Enter edit mode
-                                            isEditing.value = true
-                                        }) {
-                                            Icon(Icons.Default.Edit, contentDescription = "Edit")
-                                        }
-                                        IconButton(onClick = {
-                                            // Delete item
-                                            allExtractedData.value = allExtractedData.value.copy(
-                                                cryptoList = allExtractedData.value.cryptoList.filterNot { it == crypto }
-                                            )
-                                        }) {
-                                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                                                )
+                                                isEditing.value = false
+                                            }) {
+                                                Icon(Icons.Default.Check, contentDescription = "Save")
+                                            }
+                                        } else {
+                                            IconButton(onClick = {
+                                                // Enter edit mode
+                                                isEditing.value = true
+                                            }) {
+                                                Icon(Icons.Default.Edit, contentDescription = "Edit")
+                                            }
+                                            IconButton(onClick = {
+                                                // Delete item
+                                                allExtractedData.value = allExtractedData.value.copy(
+                                                    cryptoList = allExtractedData.value.cryptoList.filterNot { it == crypto }
+                                                )
+                                            }) {
+                                                Icon(Icons.Default.Delete, contentDescription = "Delete")
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    Button(
-                        onClick = {
-                            sendData(allExtractedData)
-                        }
-                    ) {
-                        Text(text = "Send Data")
-                    }
+                }
+                Button(
+                    onClick = {
+                        sendData(allExtractedData)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(text = "Send Data")
                 }
             }
         }
@@ -177,15 +186,33 @@ fun ParserTab(allExtractedData: MutableState<AllExtractedData>) {
 fun scrapeData(): AllExtractedData {
     val coinbase = coinbaseScraper()
     val pexpay = pexpayScraper()
-    //val bithumb = bitThumbScraper()
+    val bithumb = bitThumbScraper()
 
     val cryptoList = mutableListOf<Crypto>()
-    cryptoList.addAll(coinbase.scrapeAll().cryptoValues)
-    cryptoList.addAll(pexpay.scrapeAll().cryptoValues)
-    //cryptoList.addAll(bithumb.scrapeAll().cryptoValues)
+
+    try {
+        cryptoList.addAll(coinbase.scrapeAll().cryptoValues)
+    } catch (e: Exception) {
+        println("Error occurred while scraping data from Coinbase: ${e.message}")
+    }
+
+    try {
+        cryptoList.addAll(pexpay.scrapeAll().cryptoValues)
+    } catch (e: Exception) {
+        println("Error occurred while scraping data from Pexpay: ${e.message}")
+    }
+
+    try {
+        cryptoList.addAll(bithumb.scrapeAll().cryptoValues)
+    } catch (e: Exception) {
+        // Handle the exception from bithumb.scrapeAll()
+        // For example:
+        println("Error occurred while scraping data from Bithumb: ${e.message}")
+    }
 
     return AllExtractedData(cryptoList)
 }
+
 
 fun sendData(allExtractedDataValue:MutableState<AllExtractedData>): Boolean{
     //send extracted data with OKHttpClient
