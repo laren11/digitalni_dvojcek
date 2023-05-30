@@ -30,7 +30,11 @@ const Values = () => {
   return (
     <div className="background">
       <h1 className="title">Your values</h1>
-      <TableNoExchange columns={VALUECOLUMNS} data={data} />
+      {data.length > 0 ? (
+        <TableNoExchange columns={VALUECOLUMNS} data={data} />
+      ) : (
+        <p style={{ color: "white" }}>You don't have any values selected.</p>
+      )}
       <div style={{ height: "200px" }}></div>
     </div>
   );

@@ -463,12 +463,6 @@ module.exports = {
         }
       }
 
-      if (userPrices.length === 0) {
-        return res
-          .status(404)
-          .json({ error: "No prices found for the user's saved pairs" });
-      }
-
       res.json(userPrices);
     } catch (error) {
       console.error(error);
