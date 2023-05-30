@@ -14,13 +14,10 @@ function BasicTable(props) {
   const [savedPairs, setSavedPairs] = useState([]);
 
   useEffect(() => {
-    // Fetch data from the API endpoint
-    fetch(`http://localhost:3001/prices/getLatestPrices/${exchange}`)
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error(error));
-    console.log(data);
-  }, [exchange]);
+    if (props.data) {
+      setData(props.data);
+    }
+  }, [props.data]);
 
   useEffect(() => {
     if (userData?.user) {

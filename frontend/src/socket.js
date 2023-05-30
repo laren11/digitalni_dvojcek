@@ -5,9 +5,3 @@ const URL =
   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3002";
 
 export const socket = io(URL);
-
-export const subscribeToTopFiveData = (callback) => {
-  socket.on("top-five-data", (data) => {
-    callback(data);
-  });
-};

@@ -8,19 +8,15 @@ import StarIcon from "@mui/icons-material/Star";
 
 function TableNoExchange(props) {
   const [data, setData] = useState([]);
-  //const [data, setData] = useState(props.topFiveData || []);
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
   const [savedPairs, setSavedPairs] = useState([]);
 
   useEffect(() => {
-    // Fetch data from the API endpoint
-    fetch(props.request)
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error(error));
-    console.log(data);
-  }, []);
+    if (props.data) {
+      setData(props.data);
+    }
+  }, [props.data]);
 
   useEffect(() => {
     if (userData?.user) {
@@ -50,11 +46,6 @@ function TableNoExchange(props) {
         console.error(error);
       });
   }
-
-  /* useEffect(() => {
-    // Update the data state when topFiveData prop changes
-    setData(props.topFiveData || []);
-  }, [props.topFiveData]); */
 
   const viewGraph = (row, event) => {
     // Check if the click event came from the "Add" button
@@ -318,7 +309,7 @@ function TableNoExchange(props) {
                         <span
                           style={{
                             color:
-                              parseFloat(cell.row.values["changePercetnage"]) >
+                              parseFloat(cell.row.values["changePercentage"]) >
                               0
                                 ? "green"
                                 : parseFloat(

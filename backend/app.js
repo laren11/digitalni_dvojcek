@@ -5,7 +5,7 @@ var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 const http = require("http");
 const createError = require("http-errors");
-const priceController = require("./controllers/priceController");
+const priceController = require("../backend/controllers/priceController");
 
 require("dotenv").config();
 
@@ -23,30 +23,18 @@ io.listen(3002, () => {
 });
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
-
-  // Send initial data to the newly connected user
-  //sendTopFive(socket);
-
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
+  socket.on("getTopFive", () => {
+    emitTopFivePrices();
   });
+  socket.on("getByExchange", (exchangeName) => {
+    emitByExchange(exchangeName);
+  });
+
+  socket.on("getUserCryptos", (userId) => {
+    emityByUser(userId);
+  });
+  socket.on("disconnect", () => {});
 });
-
-function sendTopFive(socket) {
-  priceController.getTopFive(null, {
-    json: (data) => {
-      // Emit the topFiveData to the socket
-      socket.emit("top-five-data", data);
-    },
-    status: () => {}, // No-op for the status function
-  });
-}
-
-// Send the getTopFive data to all connected users every 30 minutes
-setInterval(() => {
-  io.sockets.emit("top-five-data", priceController.getTopFive());
-}, 30 * 60 * 1000);
 
 //connect to mongo db
 var mongoDB = process.env.MONGO_URI;
@@ -138,5 +126,48 @@ app.use(function (err, req, res, next) {
   //res.render('error');
   res.json(err);
 });
+
+//Function for emiting hot picks
+function emitTopFivePrices() {
+  priceController.getTopFive(null, {
+    json: function (prices) {
+      io.emit("topFivePrices", prices);
+    },
+    status: function (statusCode) {
+      console.error("Error getting top five prices:", statusCode);
+    },
+  });
+}
+
+//Function for emiting all values for given exchange
+function emitByExchange(exchangeName) {
+  priceController.getLatestCoinPrices(
+    { params: { exchangeName } },
+    {
+      json: function (prices) {
+        io.emit("byExchange", prices);
+      },
+      status: function (statusCode) {
+        console.error("Error getting prices by exchange:", statusCode);
+      },
+    }
+  );
+}
+
+//Funtion for emiting saved values
+function emityByUser(userId) {
+  priceController.getUserPrices(
+    { params: { id: userId } },
+    {
+      json: function (userPrices) {
+        console.log(userPrices);
+        io.emit("userCryptos", userPrices);
+      },
+      status: function (statusCode) {
+        console.error("Error getting user prices:", statusCode);
+      },
+    }
+  );
+}
 
 module.exports = app;
