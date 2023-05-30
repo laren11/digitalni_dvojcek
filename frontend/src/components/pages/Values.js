@@ -9,27 +9,28 @@ const Values = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    socket.on("userCryptos", (data) => {
-      setData(data);
-    });
+    if (userData?.user?.id) {
+      socket.on("userCryptos", (data) => {
+        setData(data);
+      });
+
+      socket.emit("getUserCryptos", userData.user.id);
+    }
 
     // Unsubscribe from the event when the component unmounts
     return () => {
       socket.off("userCryptos");
     };
-  }, []);
+  }, [userData?.user?.id]);
 
-  useEffect(() => {
-    socket.emit("getUserCryptos", userData?.user.id);
-  }, []);
+  if (!userData?.user?.id) {
+    return null;
+  }
 
   return (
     <div className="background">
       <h1 className="title">Your values</h1>
-      {userData?.user?.id && (
-        <TableNoExchange columns={VALUECOLUMNS} data={data} />
-      )}
-
+      <TableNoExchange columns={VALUECOLUMNS} data={data} />
       <div style={{ height: "200px" }}></div>
     </div>
   );
