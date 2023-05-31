@@ -328,8 +328,6 @@ object ForForeachFFFAutomaton: DFA {
         setSymbol(77, CURLY2)
         setSymbol(78, COMMA)
         setSymbol(79, COLON)
-        setSymbol(84, TYPE)
-        setSymbol(90, TYPE)
     }
 }
 
@@ -408,7 +406,6 @@ fun name(symbol: Int) =
         CURLY2 -> "curlyBrackets2"
         COMMA -> "semicolon"
         COLON -> "colon"
-        TYPE -> "type"
         else -> throw Error("Invalid symbol")
     }
 
