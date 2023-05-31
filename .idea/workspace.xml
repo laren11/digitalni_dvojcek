@@ -7,6 +7,8 @@
     <list default="true" id="4b4a8779-c133-48ac-a24c-c43c67cd7851" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DataScraper/src/jvmMain/kotlin/analyzer/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/DataScraper/src/jvmMain/kotlin/analyzer/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output.geojson" beforeDir="false" afterPath="$PROJECT_DIR$/output.geojson" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/maribor.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tests/maribor.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,16 +85,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/DataScraper/src/jvmMain/kotlin/analyzer/Main.kt</url>
-          <line>562</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

@@ -642,18 +642,24 @@ fun transformToGeoJSON(ast: AstNode): String {
             val blocks = mutableListOf<BlockNode>()
             blocks.addAll(city.blocks)
 
+            // Convert blocks to coordinates
             val coordinates = convertBlocksToCoordinates(blocks)
 
+            // Create a Feature object for the city
             val cityFeature = Feature("Feature", Properties(city.name), Geometry("MultiLineString", coordinates))
             features.add(cityFeature)
         }
     }
 
+    // Create a GeoJSON object with the collected features
     val geoJSON = GeoJSON("FeatureCollection", features)
     val gson = Gson()
+
+    // Convert GeoJSON object to JSON string using Gson
     return gson.toJson(geoJSON)
 }
 
+// Convert blocks to coordinates
 fun convertBlocksToCoordinates(blocks: List<BlockNode>): List<List<List<Double>>> {
     val coordinates = mutableListOf<List<List<Double>>>()
 
@@ -662,9 +668,11 @@ fun convertBlocksToCoordinates(blocks: List<BlockNode>): List<List<List<Double>>
 
         for (command in block.commands) {
             if (command is LineCommandNode) {
+                // Add start and end points of a line to the points list
                 points.add(listOf(command.startPoint.x, command.startPoint.y))
                 points.add(listOf(command.endPoint.x, command.endPoint.y))
             } else if (command is BoxCommandNode) {
+                // Add coordinates of a box (rectangle) to the points list
                 val startX = command.startPoint.x
                 val startY = command.startPoint.y
                 val endX = command.endPoint.x
@@ -675,9 +683,51 @@ fun convertBlocksToCoordinates(blocks: List<BlockNode>): List<List<List<Double>>
                 points.add(listOf(endX, endY))
                 points.add(listOf(endX, startY))
                 points.add(listOf(startX, startY))
+            } else if (command is BendCommandNode) {
+                // Add coordinates of a bend (arc) to the points list
+                val startX = command.startPoint.x
+                val startY = command.startPoint.y
+                val endX = command.endPoint.x
+                val endY = command.endPoint.y
+                val angle = command.bendAmount.value
+
+                val numberOfPoints = 10
+
+                val radius = Math.abs((endX - startX) / angle)
+                val centerX = startX + radius * Math.sin(Math.toRadians(angle))
+                val centerY = startY + radius * Math.cos(Math.toRadians(angle))
+
+                val bendCoordinates = mutableListOf<Pair<Double, Double>>()
+
+                // Generate coordinates for the bend using arc equations
+                for (i in 0 until numberOfPoints) {
+                    val t = i.toDouble() / (numberOfPoints - 1)
+                    val theta = angle * t
+
+                    val x = centerX + radius * Math.sin(Math.toRadians(theta))
+                    val y = centerY + radius * Math.cos(Math.toRadians(theta))
+
+                    val coordinate = Pair(x, y)
+                    bendCoordinates.add(coordinate)
+                }
+
+                // Add bendCoordinates to the points list
+                for (coordinate in bendCoordinates) {
+                    points.add(listOf(coordinate.first, coordinate.second))
+                }
+            } else if (command is CircCommandNode) {
+                // Add coordinates of a circle to the points list
+                val centerX = command.center.x
+                val centerY = command.center.y
+                val radius = command.radius.value
+                val numberOfPoints = 100
+
+                addCircle(centerX, centerY, radius, numberOfPoints, points)
             }
+
         }
 
+        // Add the points list to the coordinates list if it has at least 2 points
         if (points.size >= 2) {
             coordinates.add(points.toList())
         }
@@ -685,6 +735,21 @@ fun convertBlocksToCoordinates(blocks: List<BlockNode>): List<List<List<Double>>
 
     return coordinates
 }
+
+// Helper function to add coordinates of a circle to the points list
+fun addCircle(centerX: Double, centerY: Double, radius: Double, numberOfPoints: Int, points: MutableList<List<Double>>) {
+    val angleIncrement = 360.0 / numberOfPoints
+
+    // Generate coordinates for the circle using trigonometric functions
+    for (i in 0 until numberOfPoints) {
+        val angle = Math.toRadians(i * angleIncrement)
+        val x = centerX + radius * Math.cos(angle)
+        val y = centerY + radius * Math.sin(angle)
+
+        points.add(listOf(x, y))
+    }
+}
+
 
 
 

@@ -12,6 +12,6 @@ parking "Parkirisce Lent" {
 	box((0,0), (2,2));
 };
 river "Drava" {
-	bend((3,5), (3, 18), 20.4);
+	bend((1,1), (20, 20), 30);
 };
 };
