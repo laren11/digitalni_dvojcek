@@ -1,0 +1,13 @@
+city "London" {
+  road "Oxford Street" {
+    line((1, 1), (10, 10));
+    line((15, 15), (20, 20));
+  };
+  road "Baker Street" {
+    line((5, 5), (15, 15));
+  };
+  parking "Piccadilly Parking" {
+    box((30, 30), (35, 35));
+    box((40, 40), (45, 45));
+  };
+};

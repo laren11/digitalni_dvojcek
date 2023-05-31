@@ -1,0 +1,8 @@
+city "Sydney" {
+  building "Sydney Opera House" {
+    box((1, 1),(2, 2));
+  };
+  road "George Street" {
+    line((1, 1), (5, 5));
+  };
+};

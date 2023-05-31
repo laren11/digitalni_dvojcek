@@ -1,0 +1,21 @@
+city "Seattle" {
+  building "Space Needle" {
+    circ((5, 5), 8);
+  };
+
+  building "Pike Place Market" {
+    box((2, 2), (7, 7));
+  };
+
+  road "4th Avenue" {
+    line((0, 0), (10, 10));
+  };
+
+  lake "Lake Union" {
+    circ((12, 12), 6);
+  };
+
+  parking "Downtown Parking Garage" {
+    box((15, 15), (20, 20));
+  };
+};

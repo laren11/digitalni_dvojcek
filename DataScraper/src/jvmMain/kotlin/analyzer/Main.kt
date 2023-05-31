@@ -47,6 +47,8 @@ interface DFA {
     val finalStates: Set<Int>
 }
 
+
+
 object ForForeachFFFAutomaton: DFA {
     override val states = (1 .. 90).toSet()
     override val alphabet = 0 .. 255
@@ -387,11 +389,7 @@ class Parser(private val scanner: Scanner) {
                 match(CURLY1)
                 blocks()
                 match(CURLY2)
-                program()
-            }
-            VAL -> {
-                currentToken = scanner.getToken()
-                constant()
+                match(SEMI)
                 program()
             }
             else -> true
@@ -416,9 +414,11 @@ class Parser(private val scanner: Scanner) {
         return when (currentToken.symbol) {
             BUILDING, RIVER, ROAD, LAKE, PARKING -> {
                 currentToken = scanner.getToken()
+                match(STRING)
                 match(CURLY1)
                 commands()
                 match(CURLY2)
+                match(SEMI)
                 true
             }
             else -> false
@@ -429,11 +429,6 @@ class Parser(private val scanner: Scanner) {
         return when (currentToken.symbol) {
             LINE, BEND, BOX, CIRC -> {
                 command()
-                commands()
-            }
-            VAL -> {
-                currentToken = scanner.getToken()
-                constant()
                 commands()
             }
             else -> false
@@ -493,11 +488,18 @@ class Parser(private val scanner: Scanner) {
     }
 
     private fun type(): Boolean {
-        return match(NUMBER) || match(POINT)
+        return match(TYPE)
     }
 
     private fun value(): Boolean {
-        return number() || point()
+        if(currentToken.symbol == NUMBER){
+            currentToken = scanner.getToken()
+            return true
+        } else if(match(PARENT1)) {
+            return point()
+        }
+        else
+            return false
     }
 
     private fun number(): Boolean {
@@ -505,7 +507,7 @@ class Parser(private val scanner: Scanner) {
     }
 
     private fun point(): Boolean {
-        return match(POINT)
+        return (match(PARENT1) && match(NUMBER)) && match(COMMA) && match(NUMBER) && match(PARENT2)
     }
 
     private fun match(expectedSymbol: Int): Boolean {
@@ -523,30 +525,7 @@ class Parser(private val scanner: Scanner) {
 
 
 fun main(args: Array<String>) {
-    val stringForTesting = "city \"Seattle\" {\n" +
-            "  val \"start\": Point = (0, 0);\n" +
-            "  val \"end\": Point = (10, 10);\n" +
-            "\n" +
-            "  building \"Space Needle\" {\n" +
-            "    circ((5, 5), 8);\n" +
-            "  };\n" +
-            "\n" +
-            "  building \"Pike Place Market\" {\n" +
-            "    box((2, 2), (7, 7));\n" +
-            "  };\n" +
-            "\n" +
-            "  road \"4th Avenue\" {\n" +
-            "    line(\"start\", \"end\");\n" +
-            "  };\n" +
-            "\n" +
-            "  lake \"Lake Union\" {\n" +
-            "    circ((12, 12), 6);\n" +
-            "  };\n" +
-            "\n" +
-            "  parking \"Downtown Parking Garage\" {\n" +
-            "    box((15, 15), (20, 20));\n" +
-            "  };\n" +
-            "};\n"
+    val stringForTesting = readFile("tokyo")
     val scanner: Scanner = Scanner(ForForeachFFFAutomaton, ByteArrayInputStream(stringForTesting.toByteArray()))
     val parser: Parser = Parser(scanner)
     val isValidProgram = parser.parse()
@@ -557,4 +536,10 @@ fun main(args: Array<String>) {
     }
     //printTokens(Scanner(ForForeachFFFAutomaton, ByteArrayInputStream(stringForTesting.toByteArray())))
 
+}
+
+fun readFile(name: String): String {
+    val fileName = "tests/$name.txt"
+    val file = File(fileName)
+    return file.readText()
 }

@@ -1,0 +1,12 @@
+city "Ljubljana" {
+	road "Celovska cesta" {
+		line((0, 0), (5, 0));
+		bend((5, 0), (7, 5), 15);
+	};
+	building "Ljubljanski grad" {
+		box((15,15), (20, 20));
+};
+river "Ljubljanica" {
+	bend((30, 15), (40, 20), 12);
+};
+};

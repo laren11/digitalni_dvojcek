@@ -1,0 +1,9 @@
+city "Paris" {
+  river "Seine" {
+    bend((2, 3), (5, 7), 10);
+  };
+  parking "Eiffel Tower Parking" {
+    box((20, 20), (25, 25));
+    box((30, 30), (35, 35));
+  };
+};
