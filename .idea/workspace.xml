@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4b4a8779-c133-48ac-a24c-c43c67cd7851" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/DataScraper_jvm_1_0_SNAPSHOT.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/DataScraper_jvm_1_0_SNAPSHOT.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataScraper/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/DataScraper/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DataScraper/src/jvmMain/kotlin/analyzer/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/DataScraper/src/jvmMain/kotlin/analyzer/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/maribor.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tests/maribor.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +89,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/DataScraper/src/jvmMain/kotlin/analyzer/Main.kt</url>
-          <line>556</line>
+          <line>562</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>

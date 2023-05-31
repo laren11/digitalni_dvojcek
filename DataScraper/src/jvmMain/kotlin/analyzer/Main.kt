@@ -75,6 +75,12 @@ data class NumberNode(val value: Double) : AstNode()
 data class StringNode(val value: String) : AstNode()
 
 
+data class GeoJSON(val type: String, val features: List<Feature>)
+data class Feature(val type: String, val properties: Properties, val geometry: Geometry)
+data class Properties(val name: String)
+data class Geometry(val type: String, val coordinates: List<List<List<Double>>>)
+
+
 interface DFA {
     val states: Set<Int>
     val alphabet: IntRange
@@ -554,10 +560,11 @@ fun main(args: Array<String>) {
     try {
         val scanner = Scanner(ForForeachFFFAutomaton, ByteArrayInputStream(stringForTesting.toByteArray()))
         val parser = Parser(scanner)
-        val commandNodes = parser.parse()
-        val geoJsonText = astToGeoJson(commandNodes)
-        println(geoJsonText)
-        //println(commandNodes)
+        val ASTNodes = parser.parse()
+       printAst(ASTNodes)
+        val geoJSONText = transformToGeoJSON(ASTNodes)
+        val outputFile = File("output.geojson")
+        outputFile.writeText(geoJSONText)
 
     } catch (e: ParserException) {
         println("Parsing error: ${e.message}")
@@ -573,147 +580,114 @@ fun readFile(name: String): String {
     return file.readText()
 }
 
-fun astToGeoJson(astNode: AstNode): String {
-    return when (astNode) {
+fun printAst(node: AstNode, indent: String = "") {
+    when (node) {
         is ProgramNode -> {
-            val featureCollection = astNode.cities.map { cityNode ->
-                cityToFeature(cityNode)
+            println("${indent}ProgramNode")
+            for (city in node.cities) {
+                printAst(city, "$indent  ")
             }
-            val geoJson = GeoJsonObject(
-                type = "FeatureCollection",
-                features = featureCollection
-            )
-            geoJson.toJsonString()
         }
-        else -> throw IllegalArgumentException("Invalid AST root node.")
+        is CityNode -> {
+            println("${indent}CityNode(name=${node.name})")
+            for (block in node.blocks) {
+                printAst(block, "$indent  ")
+            }
+        }
+        is BlockNode -> {
+            println("${indent}BlockNode(type=${node.type}, name=${node.name})")
+            for (command in node.commands) {
+                printAst(command, "$indent  ")
+            }
+        }
+        is LineCommandNode -> {
+            println("${indent}LineCommandNode")
+            printAst(node.startPoint, "$indent  ")
+            printAst(node.endPoint, "$indent  ")
+        }
+        is BendCommandNode -> {
+            println("${indent}BendCommandNode")
+            printAst(node.startPoint, "$indent  ")
+            printAst(node.endPoint, "$indent  ")
+            printAst(node.bendAmount, "$indent  ")
+        }
+        is BoxCommandNode -> {
+            println("${indent}BoxCommandNode")
+            printAst(node.startPoint, "$indent  ")
+            printAst(node.endPoint, "$indent  ")
+        }
+        is CircCommandNode -> {
+            println("${indent}CircCommandNode")
+            printAst(node.center, "$indent  ")
+            printAst(node.radius, "$indent  ")
+        }
+        is PointNode -> {
+            println("${indent}PointNode(x=${node.x}, y=${node.y})")
+        }
+        is NumberNode -> {
+            println("${indent}NumberNode(value=${node.value})")
+        }
+        is StringNode -> {
+            println("${indent}StringNode(value=${node.value})")
+        }
     }
 }
 
-fun cityToFeature(cityNode: CityNode): GeoJsonFeature {
-    val blocks = cityNode.blocks.map { blockNode ->
-        blockToFeature(blockNode)
+
+fun transformToGeoJSON(ast: AstNode): String {
+    val features = mutableListOf<Feature>()
+
+    if (ast is ProgramNode) {
+        for (city in ast.cities) {
+            val blocks = mutableListOf<BlockNode>()
+            blocks.addAll(city.blocks)
+
+            val coordinates = convertBlocksToCoordinates(blocks)
+
+            val cityFeature = Feature("Feature", Properties(city.name), Geometry("MultiLineString", coordinates))
+            features.add(cityFeature)
+        }
     }
-    return GeoJsonFeature(
-        type = "Feature",
-        properties = mapOf("name" to cityNode.name),
-        geometry = null,
-        features = blocks
-    )
+
+    val geoJSON = GeoJSON("FeatureCollection", features)
+    val gson = Gson()
+    return gson.toJson(geoJSON)
 }
 
-fun blockToFeature(blockNode: BlockNode): GeoJsonFeature {
-    val commands = blockNode.commands.map { commandNode ->
-        commandToFeature(commandNode)
+fun convertBlocksToCoordinates(blocks: List<BlockNode>): List<List<List<Double>>> {
+    val coordinates = mutableListOf<List<List<Double>>>()
+
+    for (block in blocks) {
+        val points = mutableListOf<List<Double>>()
+
+        for (command in block.commands) {
+            if (command is LineCommandNode) {
+                points.add(listOf(command.startPoint.x, command.startPoint.y))
+                points.add(listOf(command.endPoint.x, command.endPoint.y))
+            } else if (command is BoxCommandNode) {
+                val startX = command.startPoint.x
+                val startY = command.startPoint.y
+                val endX = command.endPoint.x
+                val endY = command.endPoint.y
+
+                points.add(listOf(startX, startY))
+                points.add(listOf(startX, endY))
+                points.add(listOf(endX, endY))
+                points.add(listOf(endX, startY))
+                points.add(listOf(startX, startY))
+            }
+        }
+
+        if (points.size >= 2) {
+            coordinates.add(points.toList())
+        }
     }
-    return GeoJsonFeature(
-        type = "Feature",
-        properties = mapOf(
-            "type" to blockNode.type,
-            "name" to blockNode.name
-        ),
-        geometry = null,
-        features = commands
-    )
-}
 
-
-
-fun generateCircleCoordinates(centerX: Double, centerY: Double, radius: Double): List<List<Double>> {
-    val numSegments = 50
-    val coordinates = mutableListOf<List<Double>>()
-    for (i in 0 until numSegments) {
-        val angle = i.toDouble() / numSegments.toDouble() * 2.0 * Math.PI
-        val x = centerX + radius * Math.cos(angle)
-        val y = centerY + radius * Math.sin(angle)
-        coordinates.add(listOf(x, y))
-    }
-    // Close the circle
-    coordinates.add(coordinates[0])
     return coordinates
 }
 
-fun commandToFeature(commandNode: CommandNode): GeoJsonFeature {
-    return when (commandNode) {
-        is LineCommandNode -> {
-            val startPoint = commandNode.startPoint
-            val endPoint = commandNode.endPoint
-            val coordinates = listOf(
-                listOf(startPoint.x.toDouble(), startPoint.y.toDouble()),
-                listOf(endPoint.x.toDouble(), endPoint.y.toDouble())
-            )
-            GeoJsonFeature(
-                type = "Feature",
-                properties = mapOf("type" to "line"),
-                geometry = GeoJsonGeometry(type = "LineString", coordinates = coordinates),
-                features = emptyList()
-            )
-        }
-        is BendCommandNode -> {
-            val startPoint = commandNode.startPoint
-            val endPoint = commandNode.endPoint
-            val bendAmount = commandNode.bendAmount.value
-            val coordinates = listOf(
-                listOf(startPoint.x.toDouble(), startPoint.y.toDouble()),
-                listOf(endPoint.x.toDouble(), endPoint.y.toDouble())
-            )
-            GeoJsonFeature(
-                type = "Feature",
-                properties = mapOf("type" to "bend", "bendAmount" to bendAmount),
-                geometry = GeoJsonGeometry(type = "LineString", coordinates = coordinates),
-                features = emptyList()
-            )
-        }
-        is BoxCommandNode -> {
-            val startPoint = commandNode.startPoint
-            val endPoint = commandNode.endPoint
-            val coordinates = listOf(
-                listOf(startPoint.x.toDouble(), startPoint.y.toDouble()),
-                listOf(endPoint.x.toDouble(), startPoint.y.toDouble()),
-                listOf(endPoint.x.toDouble(), endPoint.y.toDouble()),
-                listOf(startPoint.x.toDouble(), endPoint.y.toDouble()),
-                listOf(startPoint.x.toDouble(), startPoint.y.toDouble())
-            )
-            GeoJsonFeature(
-                type = "Feature",
-                properties = mapOf("type" to "box"),
-                geometry = GeoJsonGeometry(type = "Polygon", coordinates = coordinates),
-                features = emptyList()
-            )
-        }
-        is CircCommandNode -> {
-            val center = commandNode.center
-            val radius = commandNode.radius.value.toDouble()
-            val coordinates = generateCircleCoordinates(center.x.toDouble(), center.y.toDouble(), radius)
-            GeoJsonFeature(
-                type = "Feature",
-                properties = mapOf("type" to "circle"),
-                geometry = GeoJsonGeometry(type = "Polygon", coordinates = coordinates),
-                features = emptyList()
-            )
-        }
-        else -> throw IllegalArgumentException("Invalid command node.")
-    }
-}
 
-data class GeoJsonObject(
-    val type: String,
-    val features: List<GeoJsonFeature>
-) {
-    fun toJsonString(): String {
-        return Gson().toJson(this)
-    }
-}
 
-data class GeoJsonFeature(
-    val type: String,
-    val properties: Map<String, Any?>,
-    val geometry: GeoJsonGeometry?,
-    val features: List<GeoJsonFeature>
-)
 
-data class GeoJsonGeometry(
-    val type: String,
-    val coordinates: List<List<Double>>
-)
 
 
