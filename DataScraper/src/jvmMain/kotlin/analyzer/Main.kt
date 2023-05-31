@@ -38,6 +38,22 @@ const val TYPE = 24
 const val EOF = -1
 const val NEWLINE = '\n'.code
 
+sealed class AstNode
+
+data class ProgramNode(val cities: List<CityNode>) : AstNode()
+data class CityNode(val name: String, val blocks: List<BlockNode>) : AstNode()
+data class BlockNode(val type: String, val name: String, val commands: List<CommandNode>) : AstNode()
+sealed class CommandNode(val type: String) : AstNode()
+
+data class LineCommandNode(val startPoint: PointNode, val endPoint: PointNode) : CommandNode("LINE")
+data class BendCommandNode(val startPoint: PointNode, val endPoint: PointNode, val bendAmount: NumberNode) : CommandNode("BEND")
+data class BoxCommandNode(val startPoint: PointNode, val endPoint: PointNode) : CommandNode("BOX")
+data class CircCommandNode(val center: PointNode, val radius: NumberNode) : CommandNode("CIRC")
+
+data class PointNode(val x: Double, val y: Double) : AstNode()
+data class NumberNode(val value: Double) : AstNode()
+data class StringNode(val value: String) : AstNode()
+
 interface DFA {
     val states: Set<Int>
     val alphabet: IntRange
@@ -377,163 +393,142 @@ fun printTokens(scanner: Scanner) {
 class Parser(private val scanner: Scanner) {
     private var currentToken: Token = scanner.getToken()
 
-    fun parse(): Boolean {
-        return program() && EOF()
+    fun parse(): AstNode {
+        return program()
     }
 
-    private fun program(): Boolean {
-        return when (currentToken.symbol) {
-            CITY -> {
-                currentToken = scanner.getToken()
-                string()
-                match(CURLY1)
-                blocks()
-                match(CURLY2)
-                match(SEMI)
-                program()
-            }
-            else -> true
+    private fun program(): AstNode {
+        val cities = mutableListOf<CityNode>()
+        while (currentToken.symbol == CITY) {
+            currentToken = scanner.getToken()
+            val name = string().value
+            match(CURLY1)
+            val blocks = blocks()
+            match(CURLY2)
+            match(SEMI)
+            cities.add(CityNode(name, blocks))
         }
+        return ProgramNode(cities)
     }
 
-    private fun string(): Boolean {
-        return match(STRING)
+    private fun string(): StringNode {
+        val lexeme = currentToken.lexeme
+        match(STRING)
+        return StringNode(lexeme)
     }
 
-    private fun blocks(): Boolean {
-        return when (currentToken.symbol) {
-            BUILDING, RIVER, ROAD, LAKE, PARKING -> {
-                block()
-                blocks()
-            }
-            else -> true
+
+    private fun blocks(): List<BlockNode> {
+        val blocks = mutableListOf<BlockNode>()
+        while (currentToken.symbol in listOf(BUILDING, RIVER, ROAD, LAKE, PARKING)) {
+            val type = name(currentToken.symbol)
+            currentToken = scanner.getToken()
+            val name = string().value
+            match(CURLY1)
+            val commands = commands()
+            match(CURLY2)
+            match(SEMI)
+            blocks.add(BlockNode(type, name, commands))
         }
+        return blocks
     }
 
-    private fun block(): Boolean {
-        return when (currentToken.symbol) {
-            BUILDING, RIVER, ROAD, LAKE, PARKING -> {
-                currentToken = scanner.getToken()
-                match(STRING)
-                match(CURLY1)
-                commands()
-                match(CURLY2)
-                match(SEMI)
-                true
-            }
-            else -> false
+    private fun commands(): List<CommandNode> {
+        val commands = mutableListOf<CommandNode>()
+        while (currentToken.symbol in listOf(LINE, BEND, BOX, CIRC)) {
+            commands.add(command())
         }
+        return commands
     }
 
-    private fun commands(): Boolean {
-        return when (currentToken.symbol) {
-            LINE, BEND, BOX, CIRC -> {
-                command()
-                commands()
-            }
-            else -> false
-        }
-    }
-
-    private fun command(): Boolean {
+    private fun command(): CommandNode {
         return when (currentToken.symbol) {
             LINE -> {
                 currentToken = scanner.getToken()
                 match(PARENT1)
-                point()
+                val startPoint = point()
                 match(COMMA)
-                point()
+                val endPoint = point()
                 match(PARENT2)
                 match(SEMI)
-                true
+                LineCommandNode(startPoint, endPoint)
             }
             BEND -> {
                 currentToken = scanner.getToken()
                 match(PARENT1)
-                point()
+                val startPoint = point()
                 match(COMMA)
-                point()
+                val endPoint = point()
                 match(COMMA)
-                number()
+                val bendAmount = number()
                 match(PARENT2)
                 match(SEMI)
-                true
+                BendCommandNode(startPoint, endPoint, bendAmount)
             }
             BOX -> {
                 currentToken = scanner.getToken()
                 match(PARENT1)
-                point()
+                val startPoint = point()
                 match(COMMA)
-                point()
+                val endPoint = point()
                 match(PARENT2)
                 match(SEMI)
-                true
+                BoxCommandNode(startPoint, endPoint)
             }
             CIRC -> {
                 currentToken = scanner.getToken()
                 match(PARENT1)
-                point()
+                val center = point()
                 match(COMMA)
-                number()
+                val radius = number()
                 match(PARENT2)
                 match(SEMI)
-                true
+                CircCommandNode(center, radius)
             }
-            else -> false
+            else -> throw ParserException("Invalid command: ${currentToken.lexeme}")
         }
     }
 
-    private fun constant(): Boolean {
-        return string() && match(COLON) && type() && match(ASSIGN) && value()
+
+    private fun point(): PointNode {
+        match(PARENT1)
+        val x = number().value
+        match(COMMA)
+        val y = number().value
+        match(PARENT2)
+        return PointNode(x, y)
     }
 
-    private fun type(): Boolean {
-        return match(TYPE)
+    private fun number(): NumberNode {
+        val lexeme = currentToken.lexeme
+        match(NUMBER)
+        return NumberNode(lexeme.toDouble())
     }
 
-    private fun value(): Boolean {
-        if(currentToken.symbol == NUMBER){
-            currentToken = scanner.getToken()
-            return true
-        } else if(match(PARENT1)) {
-            return point()
-        }
-        else
-            return false
-    }
-
-    private fun number(): Boolean {
-        return match(NUMBER) || match(STRING)
-    }
-
-    private fun point(): Boolean {
-        return (match(PARENT1) && match(NUMBER)) && match(COMMA) && match(NUMBER) && match(PARENT2)
-    }
-
-    private fun match(expectedSymbol: Int): Boolean {
+    private fun match(expectedSymbol: Int) {
         if (currentToken.symbol == expectedSymbol) {
             currentToken = scanner.getToken()
-            return true
+        } else {
+            throw ParserException("Syntax error: Expected $expectedSymbol, found ${currentToken.symbol}")
         }
-        return false
-    }
-
-    private fun EOF(): Boolean {
-        return currentToken.symbol == EOF_SYMBOL
     }
 }
 
+class ParserException(message: String) : Exception(message)
 
 fun main(args: Array<String>) {
     val stringForTesting = readFile("tokyo")
-    val scanner: Scanner = Scanner(ForForeachFFFAutomaton, ByteArrayInputStream(stringForTesting.toByteArray()))
-    val parser: Parser = Parser(scanner)
-    val isValidProgram = parser.parse()
-    if (isValidProgram) {
-        println("Parsing successful. The program is valid.")
-    } else {
-        println("Parsing error. The program is invalid.")
+    try {
+        val scanner = Scanner(ForForeachFFFAutomaton, ByteArrayInputStream(stringForTesting.toByteArray()))
+        val parser = Parser(scanner)
+        val commandNodes = parser.parse()
+        
+        println(commandNodes)
+
+    } catch (e: ParserException) {
+        println("Parsing error: ${e.message}")
     }
+
     //printTokens(Scanner(ForForeachFFFAutomaton, ByteArrayInputStream(stringForTesting.toByteArray())))
 
 }
