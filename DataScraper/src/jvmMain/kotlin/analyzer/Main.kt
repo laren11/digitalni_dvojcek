@@ -5,13 +5,11 @@ import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
 
+
 const val ERROR_STATE = 0
 
 const val EOF_SYMBOL = -1
 const val SKIP_SYMBOL = 0
-//const val FOR_SYMBOL = 1
-//const val FOREACH_SYMBOL = 2
-//const val FFF_SYMBOL = 3
 const val NUMBER = 2
 const val STRING = 3
 const val POINT = 4
@@ -32,14 +30,10 @@ const val PARENT1 = 18
 const val PARENT2 = 19
 const val CURLY1 = 20
 const val CURLY2 = 21
-const val SEMICOLON = 22
+const val COMMA = 22
 const val COLON = 23
 const val TYPE = 24
-//const val FOR = 18
-//const val TO = 19
-//const val BEGIN = 20
-//const val END = 21
-//const val CONSOLE = 22
+
 
 const val EOF = -1
 const val NEWLINE = '\n'.code
@@ -287,7 +281,7 @@ object ForForeachFFFAutomaton: DFA {
         setSymbol(75, PARENT2)
         setSymbol(76, CURLY1)
         setSymbol(77, CURLY2)
-        setSymbol(78, SEMICOLON)
+        setSymbol(78, COMMA)
         setSymbol(79, COLON)
         setSymbol(84, TYPE)
         setSymbol(90, TYPE)
@@ -364,7 +358,7 @@ fun name(symbol: Int) =
         PARENT2 -> "parentheses2"
         CURLY1 -> "curlyBrackets1"
         CURLY2 -> "curlyBrackets2"
-        SEMICOLON -> "semicolon"
+        COMMA -> "semicolon"
         COLON -> "colon"
         TYPE -> "type"
         else -> throw Error("Invalid symbol")
@@ -377,6 +371,156 @@ fun printTokens(scanner: Scanner) {
         printTokens(scanner)
     }
 }
+
+class Parser(private val scanner: Scanner) {
+    private var currentToken: Token = scanner.getToken()
+
+    fun parse(): Boolean {
+        return program() && EOF()
+    }
+
+    private fun program(): Boolean {
+        return when (currentToken.symbol) {
+            CITY -> {
+                currentToken = scanner.getToken()
+                string()
+                match(CURLY1)
+                blocks()
+                match(CURLY2)
+                program()
+            }
+            VAL -> {
+                currentToken = scanner.getToken()
+                constant()
+                program()
+            }
+            else -> true
+        }
+    }
+
+    private fun string(): Boolean {
+        return match(STRING)
+    }
+
+    private fun blocks(): Boolean {
+        return when (currentToken.symbol) {
+            BUILDING, RIVER, ROAD, LAKE, PARKING -> {
+                block()
+                blocks()
+            }
+            else -> true
+        }
+    }
+
+    private fun block(): Boolean {
+        return when (currentToken.symbol) {
+            BUILDING, RIVER, ROAD, LAKE, PARKING -> {
+                currentToken = scanner.getToken()
+                match(CURLY1)
+                commands()
+                match(CURLY2)
+                true
+            }
+            else -> false
+        }
+    }
+
+    private fun commands(): Boolean {
+        return when (currentToken.symbol) {
+            LINE, BEND, BOX, CIRC -> {
+                command()
+                commands()
+            }
+            VAL -> {
+                currentToken = scanner.getToken()
+                constant()
+                commands()
+            }
+            else -> false
+        }
+    }
+
+    private fun command(): Boolean {
+        return when (currentToken.symbol) {
+            LINE -> {
+                currentToken = scanner.getToken()
+                match(PARENT1)
+                point()
+                match(COMMA)
+                point()
+                match(PARENT2)
+                match(SEMI)
+                true
+            }
+            BEND -> {
+                currentToken = scanner.getToken()
+                match(PARENT1)
+                point()
+                match(COMMA)
+                point()
+                match(COMMA)
+                number()
+                match(PARENT2)
+                match(SEMI)
+                true
+            }
+            BOX -> {
+                currentToken = scanner.getToken()
+                match(PARENT1)
+                point()
+                match(COMMA)
+                point()
+                match(PARENT2)
+                match(SEMI)
+                true
+            }
+            CIRC -> {
+                currentToken = scanner.getToken()
+                match(PARENT1)
+                point()
+                match(COMMA)
+                number()
+                match(PARENT2)
+                match(SEMI)
+                true
+            }
+            else -> false
+        }
+    }
+
+    private fun constant(): Boolean {
+        return string() && match(COLON) && type() && match(ASSIGN) && value()
+    }
+
+    private fun type(): Boolean {
+        return match(NUMBER) || match(POINT)
+    }
+
+    private fun value(): Boolean {
+        return number() || point()
+    }
+
+    private fun number(): Boolean {
+        return match(NUMBER) || match(STRING)
+    }
+
+    private fun point(): Boolean {
+        return match(POINT)
+    }
+
+    private fun match(expectedSymbol: Int): Boolean {
+        if (currentToken.symbol == expectedSymbol) {
+            currentToken = scanner.getToken()
+            return true
+        }
+        return false
+    }
+
+    private fun EOF(): Boolean {
+        return currentToken.symbol == EOF_SYMBOL
+    }
+}
+
 
 fun main(args: Array<String>) {
     val stringForTesting = "city \"Seattle\" {\n" +
@@ -403,11 +547,14 @@ fun main(args: Array<String>) {
             "    box((15, 15), (20, 20));\n" +
             "  };\n" +
             "};\n"
-    //printTokens(Scanner(ForForeachFFFAutomaton, File("positive/example110.txt").inputStream()))
-    printTokens(Scanner(ForForeachFFFAutomaton, ByteArrayInputStream(stringForTesting.toByteArray())))
-    //if (parser(Scanner(ForForeachFFFAutomaton, File(args[0]).inputStream())).parse()) {
-    //    print("accept")
-    //} else {
-    //    print("reject")
-    //}
+    val scanner: Scanner = Scanner(ForForeachFFFAutomaton, ByteArrayInputStream(stringForTesting.toByteArray()))
+    val parser: Parser = Parser(scanner)
+    val isValidProgram = parser.parse()
+    if (isValidProgram) {
+        println("Parsing successful. The program is valid.")
+    } else {
+        println("Parsing error. The program is invalid.")
+    }
+    //printTokens(Scanner(ForForeachFFFAutomaton, ByteArrayInputStream(stringForTesting.toByteArray())))
+
 }
