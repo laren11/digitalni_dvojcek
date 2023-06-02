@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import UserContext from "../../context/userContext";
 import BasicTable from "../tables/BasicTable";
 import { COLUMNS, VALUECOLUMNS } from "../../constants/Columns";
