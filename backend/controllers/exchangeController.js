@@ -6,9 +6,6 @@ const ExchangeModel = require("../models/exchangeModel.js");
  * @description :: Server-side logic for managing exchanges.
  */
 module.exports = {
-  /**
-   * exchangeController.list()
-   */
   list: function (req, res) {
     ExchangeModel.find()
       .then((exchanges) => {
@@ -22,9 +19,6 @@ module.exports = {
       });
   },
 
-  /**
-   * exchangeController.show()
-   */
   show: function (req, res) {
     var id = req.params.id;
 
@@ -46,9 +40,6 @@ module.exports = {
     });
   },
 
-  /**
-   * exchangeController.create()
-   */
   create: function (req, res) {
     var exchange = new ExchangeModel({
       name: req.body.name,
@@ -67,9 +58,6 @@ module.exports = {
     });
   },
 
-  /**
-   * exchangeController.update()
-   */
   update: function (req, res) {
     var id = req.params.id;
 
@@ -103,9 +91,6 @@ module.exports = {
     });
   },
 
-  /**
-   * exchangeController.remove()
-   */
   remove: function (req, res) {
     var id = req.params.id;
 

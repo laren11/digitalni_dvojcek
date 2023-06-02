@@ -160,7 +160,6 @@ function emityByUser(userId) {
     { params: { id: userId } },
     {
       json: function (userPrices) {
-        console.log(userPrices);
         io.emit("userCryptos", userPrices);
       },
       status: function (statusCode) {

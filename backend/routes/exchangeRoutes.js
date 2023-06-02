@@ -1,30 +1,14 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var exchangeController = require('../controllers/exchangeController.js');
+var exchangeController = require("../controllers/exchangeController.js");
 
-/*
- * GET
- */
-router.get('/', exchangeController.list);
+router.get("/", exchangeController.list);
+router.get("/:id", exchangeController.show);
 
-/*
- * GET
- */
-router.get('/:id', exchangeController.show);
+router.post("/", exchangeController.create);
 
-/*
- * POST
- */
-router.post('/', exchangeController.create);
+router.put("/:id", exchangeController.update);
 
-/*
- * PUT
- */
-router.put('/:id', exchangeController.update);
-
-/*
- * DELETE
- */
-router.delete('/:id', exchangeController.remove);
+router.delete("/:id", exchangeController.remove);
 
 module.exports = router;

@@ -15,6 +15,8 @@ module.exports = {
     const user = await User.findById(req.user);
     res.json({ displayName: user.displayName, id: user._id });
   },
+
+  // Register user function
   register: async (req, res) => {
     try {
       let { email, password, passwordCheck, displayName } = req.body;
@@ -64,6 +66,7 @@ module.exports = {
     }
   },
 
+  //User login function
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -130,6 +133,8 @@ module.exports = {
       res.status(500).json({ error: err.message });
     }
   },
+
+  // Link cryptocurrency-exchange pair to user
   addUserCrypto: async (req, res) => {
     const { cryptoName, exchangeName, user } = req.body;
     const userId = user.id;
@@ -181,6 +186,8 @@ module.exports = {
       return res.status(500).json({ error: "Internal Server Error" });
     }
   },
+
+  // Get cryptocurrency-exchange pairs saved by user
   getSaved: async (req, res) => {
     const { userID } = req.body;
 

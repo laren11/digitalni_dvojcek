@@ -3,12 +3,9 @@ var CryptocurrencyModel = require("../models/cryptocurrencyModel.js");
 /**
  * cryptocurrencyController.js
  *
- * @description :: Server-side logic for managing cryptocurrencys.
+ * @description :: Server-side logic for managing cryptocurrencies.
  */
 module.exports = {
-  /**
-   * cryptocurrencyController.list()
-   */
   list: function (req, res) {
     CryptocurrencyModel.find(function (err, cryptocurrencies) {
       if (err) {
@@ -22,9 +19,6 @@ module.exports = {
     });
   },
 
-  /**
-   * cryptocurrencyController.show()
-   */
   show: function (req, res) {
     var id = req.params.id;
 
@@ -46,9 +40,6 @@ module.exports = {
     });
   },
 
-  /**
-   * cryptocurrencyController.create()
-   */
   create: function (req, res) {
     var cryptocurrency = new CryptocurrencyModel({
       name: req.body.name,
@@ -66,9 +57,6 @@ module.exports = {
     });
   },
 
-  /**
-   * cryptocurrencyController.update()
-   */
   update: function (req, res) {
     var id = req.params.id;
 
@@ -101,9 +89,6 @@ module.exports = {
     });
   },
 
-  /**
-   * cryptocurrencyController.remove()
-   */
   remove: function (req, res) {
     var id = req.params.id;
 

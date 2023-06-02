@@ -1,30 +1,14 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var cryptocurrencyController = require('../controllers/cryptocurrencyController.js');
+var cryptocurrencyController = require("../controllers/cryptocurrencyController.js");
 
-/*
- * GET
- */
-router.get('/', cryptocurrencyController.list);
+router.get("/", cryptocurrencyController.list);
+router.get("/:id", cryptocurrencyController.show);
 
-/*
- * GET
- */
-router.get('/:id', cryptocurrencyController.show);
+router.post("/", cryptocurrencyController.create);
 
-/*
- * POST
- */
-router.post('/', cryptocurrencyController.create);
+router.put("/:id", cryptocurrencyController.update);
 
-/*
- * PUT
- */
-router.put('/:id', cryptocurrencyController.update);
-
-/*
- * DELETE
- */
-router.delete('/:id', cryptocurrencyController.remove);
+router.delete("/:id", cryptocurrencyController.remove);
 
 module.exports = router;

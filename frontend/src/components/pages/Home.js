@@ -96,7 +96,7 @@ function Home(props) {
         >
           <option value="Coinbase">Coinbase</option>
           <option value="Pexpay">Pexpay</option>
-          {/* <option value="Bithumb">Bithumb</option> */}
+          {/* <option value="Bithumb">Bithumb</option> Fetching from Bithumb doesnt work properly*/}
         </select>
         <BasicTable
           exchangeName={selectedExchange}

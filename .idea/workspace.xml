@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4b4a8779-c133-48ac-a24c-c43c67cd7851" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataScraper/src/jvmMain/kotlin/analyzer/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/DataScraper/src/jvmMain/kotlin/analyzer/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output.geojson" beforeDir="false" afterPath="$PROJECT_DIR$/output.geojson" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/maribor.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tests/maribor.txt" afterDir="false" />
-    </list>
+    <list default="true" id="4b4a8779-c133-48ac-a24c-c43c67cd7851" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

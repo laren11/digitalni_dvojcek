@@ -8,11 +8,7 @@ const UserModel = require("../models/userModel.js");
  * @description :: Server-side logic for managing prices.
  */
 module.exports = {
-  /**
-   * priceController.list()
-   */
   list: function (req, res) {
-    console.log("HERE");
     PriceModel.find()
       .then((prices) => {
         return res.json(prices);
@@ -25,9 +21,6 @@ module.exports = {
       });
   },
 
-  /**
-   * priceController.show()
-   */
   show: async function (req, res) {
     const priceId = req.params.id;
     try {
@@ -39,9 +32,6 @@ module.exports = {
     }
   },
 
-  /**
-   * priceController.create()
-   */
   create: function (req, res) {
     var price = new PriceModel({
       cryptocurrency: req.body.cryptocurrency,
@@ -62,9 +52,6 @@ module.exports = {
     });
   },
 
-  /**
-   * priceController.update()
-   */
   update: function (req, res) {
     var id = req.params.id;
 
@@ -102,9 +89,6 @@ module.exports = {
     });
   },
 
-  /**
-   * priceController.remove()
-   */
   remove: function (req, res) {
     var id = req.params.id;
 
@@ -120,6 +104,7 @@ module.exports = {
     });
   },
 
+  // Function for saving scraped data from Kotlin to database
   scrapedData: function (req, res) {
     const data = req.body; // JSON data sent from Kotlin application
 
@@ -187,6 +172,7 @@ module.exports = {
     res.status(200).json({ message: "Prices created successfully" });
   },
 
+  //Function for getting graph data for a specific crypto-exchange pair
   graphData: async function (req, res) {
     try {
       const { value, exchange } = req.body;
@@ -195,20 +181,12 @@ module.exports = {
       if (!cryptocurrency) {
         return res.status(404).json({ message: "Cryptocurrency not found." });
       }
-
-      console.log("I AM HEREEE1");
       // Find the corresponding exchange
       const exchangeObj = await ExchangeModel.findOne({ name: exchange });
 
       if (!exchangeObj) {
         return res.status(404).json({ message: "Exchange not found." });
       }
-      console.log(
-        "I AM HEREEE2, cryproID: ",
-        cryptocurrency._id,
-        ", exchangeID: ",
-        exchangeObj._id
-      );
 
       // Find prices with the provided cryptocurrency and exchange
       const prices = await PriceModel.find({
@@ -217,7 +195,6 @@ module.exports = {
       })
         .populate("cryptocurrency")
         .populate("exchange");
-      console.log("I AM HERE 3");
       res.status(200).json(prices);
     } catch (error) {
       // Handle any errors that occur during processing
@@ -226,6 +203,7 @@ module.exports = {
     }
   },
 
+  // Function for getting all latest prices from exchange passed as parameter
   getLatestCoinPrices: async function (req, res) {
     try {
       const { exchangeName } = req.params;
@@ -327,6 +305,7 @@ module.exports = {
     }
   },
 
+  // Function for getting top five latest prices based on change percentage from last price
   getTopFive: async function (req, res) {
     try {
       const prices = await PriceModel.aggregate([
@@ -365,7 +344,7 @@ module.exports = {
         },
         {
           $lookup: {
-            from: "cryptocurrencies", // Name of the cryptocurrencies collection
+            from: "cryptocurrencies",
             localField: "_id.cryptocurrency",
             foreignField: "_id",
             as: "cryptocurrency",
@@ -373,7 +352,7 @@ module.exports = {
         },
         {
           $lookup: {
-            from: "exchanges", // Name of the exchanges collection
+            from: "exchanges",
             localField: "_id.exchange",
             foreignField: "_id",
             as: "exchange",
@@ -404,11 +383,12 @@ module.exports = {
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
+
+  // Function for getting all latest prices from coins saved by user
   getUserPrices: async function (req, res) {
     try {
       const userId = req.params.id;
 
-      // Find the user by their ID
       const user = await UserModel.findById(userId).populate(
         "saved.cryptoId saved.exchangeId"
       );

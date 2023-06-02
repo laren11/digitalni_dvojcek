@@ -1,3 +1,5 @@
+// File for defining table columns
+
 export const COLUMNS = [
   {
     Header: "Currency",

@@ -6,9 +6,6 @@ var AtmModel = require("../models/atmModel.js");
  * @description :: Server-side logic for managing atms.
  */
 module.exports = {
-  /**
-   * atmController.list()
-   */
   list: function (req, res) {
     AtmModel.find()
       .then((atms) => {
@@ -22,9 +19,6 @@ module.exports = {
       });
   },
 
-  /**
-   * atmController.show()
-   */
   show: function (req, res) {
     var id = req.params.id;
 
@@ -46,9 +40,6 @@ module.exports = {
     });
   },
 
-  /**
-   * atmController.create()
-   */
   create: function (req, res) {
     var atm = new AtmModel({
       name: req.body.name,
@@ -73,9 +64,6 @@ module.exports = {
     });
   },
 
-  /**
-   * atmController.update()
-   */
   update: function (req, res) {
     var id = req.params.id;
 
@@ -114,9 +102,6 @@ module.exports = {
     });
   },
 
-  /**
-   * atmController.remove()
-   */
   remove: function (req, res) {
     var id = req.params.id;
 

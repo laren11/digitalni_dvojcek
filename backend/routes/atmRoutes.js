@@ -1,30 +1,14 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var atmController = require('../controllers/atmController.js');
+var atmController = require("../controllers/atmController.js");
 
-/*
- * GET
- */
-router.get('/', atmController.list);
+router.get("/", atmController.list);
+router.get("/:id", atmController.show);
 
-/*
- * GET
- */
-router.get('/:id', atmController.show);
+router.post("/", atmController.create);
 
-/*
- * POST
- */
-router.post('/', atmController.create);
+router.put("/:id", atmController.update);
 
-/*
- * PUT
- */
-router.put('/:id', atmController.update);
-
-/*
- * DELETE
- */
-router.delete('/:id', atmController.remove);
+router.delete("/:id", atmController.remove);
 
 module.exports = router;
