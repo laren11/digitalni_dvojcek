@@ -24,10 +24,6 @@ function TableNoExchange(props) {
     }
   }, [userData]);
 
-  useEffect(() => {
-    console.log("SAVED PAIRS: ", savedPairs);
-  }, [savedPairs]);
-
   function getSavedCryptoPairs() {
     fetch("http://localhost:3001/users/getSaved", {
       method: "POST",
@@ -77,9 +73,7 @@ function TableNoExchange(props) {
       .then((response) => response.json())
       .then((data) => {
         // Handle the response from the server
-        console.log("Add User Crypto Response:", data);
         getSavedCryptoPairs();
-        // Perform any additional actions or update the UI as needed
       })
       .catch((error) => console.error(error));
   };

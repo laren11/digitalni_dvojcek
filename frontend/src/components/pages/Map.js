@@ -19,7 +19,6 @@ const Map = () => {
     fetch("http://localhost:3001/atms/")
       .then((response) => response.json())
       .then((data) => {
-        console.log("DATA: ", data);
         setATMData(data);
       })
       .catch((error) => {

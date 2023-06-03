@@ -12,7 +12,6 @@ function Graph(props) {
   const exchange = params.get("exchange");
   const [graphData, setGraphData] = useState([]);
   const chartRef = useRef(null);
-  console.log("PROPS: ", value, exchange);
 
   const fetchGraphData = () => {
     fetch("http://localhost:3001/prices/graphdata", {
@@ -24,12 +23,9 @@ function Graph(props) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("DATA: ", data);
         setGraphData(data);
       })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+      .catch((error) => {});
   };
 
   useEffect(() => {

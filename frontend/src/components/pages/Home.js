@@ -34,7 +34,6 @@ function Home(props) {
     fetch("http://localhost:3001/prices/")
       .then((response) => response.json())
       .then((data) => {
-        console.log("DATA: ", data);
         setCryptoData(data);
       })
       .catch((error) => {
@@ -62,11 +61,6 @@ function Home(props) {
   useEffect(() => {
     socket.emit("getByExchange", selectedExchange); // Emit selectedExchange value to the socket
   }, [selectedExchange]);
-
-  useEffect(() => {
-    console.log("EXCHANGE DATA: ", exchangeData);
-    console.log("CRYPTO DATA: ", cryptoData);
-  }, [exchangeData, cryptoData]);
 
   // Workflow test
 

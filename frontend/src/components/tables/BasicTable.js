@@ -25,9 +25,7 @@ function BasicTable(props) {
     }
   }, [userData]);
 
-  useEffect(() => {
-    console.log("SAVED PAIRS: ", savedPairs);
-  }, [savedPairs]);
+  useEffect(() => {}, [savedPairs]);
 
   function getSavedCryptoPairs() {
     fetch("http://localhost:3001/users/getSaved", {
@@ -77,9 +75,7 @@ function BasicTable(props) {
       .then((response) => response.json())
       .then((data) => {
         // Handle the response from the server
-        console.log("Add User Crypto Response:", data);
         getSavedCryptoPairs();
-        // Perform any additional actions or update the UI as needed
       })
       .catch((error) => console.error(error));
   };

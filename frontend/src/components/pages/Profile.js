@@ -3,7 +3,6 @@ import UserContext from "../../context/userContext";
 
 const Profile = () => {
   const { userData } = useContext(UserContext);
-  console.log("USERDATA: ", userData);
   return (
     <div>
       {" "}
